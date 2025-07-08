@@ -237,7 +237,7 @@ Allow: /`);
   // Create PDF job endpoint
   app.post("/api/pdf/process", upload.array("files"), async (req, res) => {
     try {
-      const { toolType, splitOptions, reorderOptions, deleteOptions, pageNumbersOptions } = req.body;
+      const { toolType, splitOptions, reorderOptions, deleteOptions, pageNumbersOptions, metadataOptions } = req.body;
       const files = req.files as Express.Multer.File[];
       
       console.log(`Processing PDF job - Tool: ${toolType}, Files: ${files?.length}`);
@@ -319,6 +319,12 @@ Allow: /`);
                 parsedOptions = JSON.parse(pageNumbersOptions);
               } catch (e) {
                 console.error("Invalid page numbers options:", e);
+              }
+            } else if (req.body.metadataOptions) {
+              try {
+                parsedOptions = JSON.parse(req.body.metadataOptions);
+              } catch (e) {
+                console.error("Invalid metadata options:", e);
               }
             }
             const outputFile = await processPdfJob(job.jobId, toolType, inputFiles, parsedOptions);
@@ -566,7 +572,7 @@ async function processPdfJob(jobId: string, toolType: string, inputFiles: string
         return await reorderPages(inputFiles[0], outputFile, options);
       
       case 'edit-metadata':
-        return await editMetadata(inputFiles[0], outputFile);
+        return await editMetadata(inputFiles[0], outputFile, options);
       
       case 'excel-to-pdf':
         return await convertToPdf(inputFiles, outputFile, toolType);
@@ -1700,26 +1706,48 @@ async function reorderPages(inputFile: string, outputFile: string, reorderOption
   return outputFile;
 }
 
-async function editMetadata(inputFile: string, outputFile: string): Promise<string> {
+async function editMetadata(inputFile: string, outputFile: string, metadataOptions?: any): Promise<string> {
   const pdfBytes = fs.readFileSync(inputFile);
   const pdf = await PDFDocument.load(pdfBytes);
   
+  // Get metadata from options or use defaults
+  const title = metadataOptions?.title || 'Edited PDF Document';
+  const author = metadataOptions?.author || 'PDFo Editor';
+  const subject = metadataOptions?.subject || 'Document processed by PDFo';
+  const keywords = metadataOptions?.keywords || 'PDFo, edited, metadata';
+  const clearExisting = metadataOptions?.clearExisting || false;
+  
+  // Clean text to avoid encoding issues
+  const cleanText = (text: string) => {
+    if (!text) return '';
+    // Remove or replace problematic characters
+    return text.replace(/[^\x00-\x7F]/g, '').trim();
+  };
+  
   // Edit PDF metadata
-  pdf.setTitle('Edited PDF Document');
-  pdf.setAuthor('PDFo Editor');
-  pdf.setSubject('Document processed by PDFo');
-  pdf.setKeywords(['PDFo', 'edited', 'metadata']);
+  if (clearExisting) {
+    // Clear existing metadata first
+    pdf.setTitle('');
+    pdf.setAuthor('');
+    pdf.setSubject('');
+    pdf.setKeywords([]);
+  }
+  
+  pdf.setTitle(cleanText(title));
+  pdf.setAuthor(cleanText(author));
+  pdf.setSubject(cleanText(subject));
+  pdf.setKeywords(cleanText(keywords).split(',').map(k => k.trim()).filter(k => k));
   pdf.setProducer('PDFo - Free PDF Tools');
   pdf.setCreator('PDFo Application');
   pdf.setCreationDate(new Date());
   pdf.setModificationDate(new Date());
   
-  // Add a visual indicator
+  // Add a visual indicator (using only ASCII characters)
   const helveticaFont = await pdf.embedFont(StandardFonts.Helvetica);
   const pages = pdf.getPages();
   if (pages.length > 0) {
     const firstPage = pages[0];
-    firstPage.drawText('ℹ️ METADATA UPDATED', {
+    firstPage.drawText('METADATA UPDATED', {
       x: 20,
       y: 40,
       size: 8,

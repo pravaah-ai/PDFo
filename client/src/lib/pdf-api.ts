@@ -16,6 +16,8 @@ export async function createPdfJob(toolType: string, files: File[], options?: an
       formData.append('rotateOptions', JSON.stringify(options));
     } else if (toolType === 'page-numbers-pdf') {
       formData.append('pageNumbersOptions', JSON.stringify(options));
+    } else if (toolType === 'edit-metadata') {
+      formData.append('metadataOptions', JSON.stringify(options));
     }
   }
   

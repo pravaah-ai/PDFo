@@ -278,6 +278,8 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           options = rotateOptions;
         } else if (toolType === 'page-numbers-pdf') {
           options = pageNumbersOptions;
+        } else if (toolType === 'edit-metadata') {
+          options = metadataOptions;
         }
         const jobResponse = await createPdfJob(toolType, files, options);
         setJobId(jobResponse.jobId);
