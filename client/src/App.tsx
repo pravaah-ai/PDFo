@@ -4,7 +4,9 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AdminProvider } from "@/contexts/AdminContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { AdminRoute } from "@/components/AdminRoute";
 
 import { useEffect } from "react";
 import { initGA } from "./lib/analytics";
@@ -20,6 +22,14 @@ import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import Dashboard from "@/pages/dashboard";
 import Logout from "@/pages/logout";
+import AdminLogin from "@/pages/admin/admin-login";
+import AdminDashboard from "@/pages/admin/admin-dashboard";
+import ToolsManagement from "@/pages/admin/tools-management";
+import BlogManagement from "@/pages/admin/blog-management";
+import FeedbackManagement from "@/pages/admin/feedback-management";
+import SEOManagement from "@/pages/admin/seo-management";
+import TagManagement from "@/pages/admin/tag-management";
+import AdminSettings from "@/pages/admin/admin-settings";
 
 function Router() {
   useAnalytics();
@@ -63,6 +73,42 @@ function Router() {
           <Dashboard />
         </ProtectedRoute>
       )} />
+      <Route path="/pdfo_pravaah_aite/login" component={AdminLogin} />
+      <Route path="/pdfo_pravaah_aite" component={() => (
+        <AdminRoute>
+          <AdminDashboard />
+        </AdminRoute>
+      )} />
+      <Route path="/pdfo_pravaah_aite/tools" component={() => (
+        <AdminRoute>
+          <ToolsManagement />
+        </AdminRoute>
+      )} />
+      <Route path="/pdfo_pravaah_aite/blogs" component={() => (
+        <AdminRoute>
+          <BlogManagement />
+        </AdminRoute>
+      )} />
+      <Route path="/pdfo_pravaah_aite/feedback" component={() => (
+        <AdminRoute>
+          <FeedbackManagement />
+        </AdminRoute>
+      )} />
+      <Route path="/pdfo_pravaah_aite/seo" component={() => (
+        <AdminRoute>
+          <SEOManagement />
+        </AdminRoute>
+      )} />
+      <Route path="/pdfo_pravaah_aite/tags" component={() => (
+        <AdminRoute>
+          <TagManagement />
+        </AdminRoute>
+      )} />
+      <Route path="/pdfo_pravaah_aite/settings" component={() => (
+        <AdminRoute>
+          <AdminSettings />
+        </AdminRoute>
+      )} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -80,10 +126,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <TooltipProvider>
-          <Router />
-          <Toaster />
-        </TooltipProvider>
+        <AdminProvider>
+          <TooltipProvider>
+            <Router />
+            <Toaster />
+          </TooltipProvider>
+        </AdminProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
