@@ -11,6 +11,9 @@ import Home from "@/pages/home";
 import ToolPage from "@/pages/tool-page";
 import NotFound from "@/pages/not-found";
 import Privacy from "@/pages/privacy";
+import About from "@/pages/about";
+import Terms from "@/pages/terms";
+import Contact from "@/pages/contact";
 
 function Router() {
   useAnalytics();
@@ -42,6 +45,9 @@ function Router() {
       <Route path="/edit-metadata" component={() => <ToolPage toolType="edit-metadata" />} />
       <Route path="/excel-to-pdf" component={() => <ToolPage toolType="excel-to-pdf" />} />
       <Route path="/privacy" component={Privacy} />
+      <Route path="/about" component={About} />
+      <Route path="/terms" component={Terms} />
+      <Route path="/contact" component={Contact} />
       <Route component={NotFound} />
     </Switch>
   );

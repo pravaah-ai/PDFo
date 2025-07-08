@@ -140,6 +140,13 @@ The application follows a full-stack architecture with clear separation between 
   - **Privacy Notice Component**: Displays data protection info on all tool pages
   - **Privacy Policy Page**: Dedicated page explaining privacy practices and user rights
   - **Security Measures**: Encrypted transmission, isolated processing, minimal data collection
+- July 08, 2025. Completed comprehensive company information architecture:
+  - **About Us Page**: Complete company story, mission, values, and technology stack overview
+  - **Terms of Service**: Full legal terms with user responsibilities, privacy, and liability disclaimers
+  - **Contact Page**: Multi-channel contact system with categorized support (general, bugs, features, business)
+  - **Footer Navigation**: Proper routing to all company pages with Link components
+  - **Professional Content**: Enterprise-grade content for all company information pages
+  - **Responsive Design**: All company pages fully responsive with consistent PDFo branding
 
 
 ## User Preferences
