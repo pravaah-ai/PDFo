@@ -92,14 +92,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-slate-700 mt-8 pt-6 text-center">
-          <p className="text-slate-400 text-sm mb-2">
-            &copy; 2025 Pravaah INC. All rights reserved.
-          </p>
-          <p className="text-slate-400 text-sm">
-            Made with <span className="text-red-400">❤️</span> for better PDF workflows
-          </p>
-        </div>
+
       </div>
     </footer>
   );
