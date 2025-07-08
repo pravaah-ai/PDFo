@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
+import { ToolFooter } from "@/components/tool-footer";
 import { FileUpload } from "@/components/file-upload";
 import { ProcessingStates } from "@/components/processing-states";
 import { DonateButton } from "@/components/donate-button";
@@ -9,7 +9,8 @@ import { getToolConfig } from "@/lib/tools-config";
 import { createPdfJob, pollJobStatus, downloadPdfFile } from "@/lib/pdf-api";
 import { trackPageView, trackEvent } from "@/lib/analytics";
 import { useToast } from "@/hooks/use-toast";
-import { WandSparkles } from "lucide-react";
+import { WandSparkles, ArrowLeft } from "lucide-react";
+import { Link } from "wouter";
 
 interface ToolPageProps {
   toolType: string;
@@ -149,6 +150,16 @@ export default function ToolPage({ toolType }: ToolPageProps) {
       <Header />
       <main className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Back to Tools Button */}
+          <div className="mb-8">
+            <Link href="/">
+              <Button variant="outline" className="flex items-center gap-2 hover:bg-gray-50">
+                <ArrowLeft className="h-4 w-4" />
+                Back to Tools
+              </Button>
+            </Link>
+          </div>
+
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-pdfo-dark-grey mb-4">
               {toolConfig.title}
@@ -193,7 +204,7 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           </div>
         </div>
       </main>
-      <Footer />
+      <ToolFooter />
     </div>
   );
 }
