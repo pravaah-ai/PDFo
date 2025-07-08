@@ -84,6 +84,7 @@ export default function ToolPage({ toolType }: ToolPageProps) {
         // Single job processing (merge-pdf combines all files into one job)
         const jobResponse = await createPdfJob(toolType, files);
         setJobId(jobResponse.jobId);
+        console.log('Job created with ID:', jobResponse.jobId);
 
         // Start polling for job status
         pollJobStatus(

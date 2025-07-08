@@ -17,7 +17,7 @@ export function DonateButton({
       asChild
       variant={variant}
       size={size}
-      className={`bg-pdfo-warning hover:bg-yellow-500 text-white ${className}`}
+      className={`bg-pdfo-warning hover:bg-amber-600 text-white ${className}`}
     >
       <a
         href="https://buymeacoffee.com/pravaah"

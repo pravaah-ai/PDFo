@@ -35,6 +35,31 @@
   --pdfo-error: hsl(0, 84%, 60%);
 }
 
+/* PDFo utility classes */
+.bg-pdfo-blue {
+  background-color: var(--pdfo-blue);
+}
+
+.bg-pdfo-blue-light {
+  background-color: var(--pdfo-blue-light);
+}
+
+.bg-pdfo-warning {
+  background-color: var(--pdfo-warning);
+}
+
+.hover\:bg-pdfo-warning:hover {
+  background-color: var(--pdfo-warning);
+}
+
+.hover\:bg-amber-600:hover {
+  background-color: rgb(217 119 6);
+}
+
+.text-pdfo-dark-grey {
+  color: var(--pdfo-dark-grey);
+}
+
 .dark {
   --background: hsl(222, 47%, 11%);
   --foreground: hsl(213, 31%, 91%);
