@@ -291,7 +291,7 @@ export default function ToolPage({ toolType }: ToolPageProps) {
 
         {/* Process Button */}
         {files.length > 0 && processingState === "idle" && (
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-4">
             <Button 
               onClick={handleProcess}
               size="lg"
@@ -300,11 +300,19 @@ export default function ToolPage({ toolType }: ToolPageProps) {
               <WandSparkles className="h-5 w-5 mr-2" />
               Process {files.length} File{files.length > 1 ? 's' : ''}
             </Button>
+            
+            {/* Coffee Support Button */}
+            <div className="space-y-2">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Love PDFo? <Coffee className="inline h-4 w-4 mx-1" /> Support us with a coffee!
+              </p>
+              <DonateButton variant="outline" size="sm" />
+            </div>
           </div>
         )}
         
         {/* Processing States */}
-        <div className="mt-8">
+        <div className="mt-6">
           <ProcessingStates
             state={processingState}
             progress={progress}
@@ -314,38 +322,43 @@ export default function ToolPage({ toolType }: ToolPageProps) {
             onReset={handleReset}
           />
         </div>
+
+        {/* Coffee Support Button - Show after successful processing */}
+        {processingState === "success" && (
+          <div className="mt-4 text-center space-y-2">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Love PDFo? <Coffee className="inline h-4 w-4 mx-1" /> Support us with a coffee!
+            </p>
+            <DonateButton variant="outline" size="sm" />
+          </div>
+        )}
         
         {/* Batch Processing Results */}
         {batchJobs.length > 0 && (
-          <div className="mt-8">
+          <div className="mt-6">
             <BatchProcessing
               jobs={batchJobs}
               onDownloadAll={handleDownloadAll}
               onReset={handleReset}
             />
+            
+            {/* Coffee Support Button - Show after batch processing */}
+            <div className="mt-4 text-center space-y-2">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Love PDFo? <Coffee className="inline h-4 w-4 mx-1" /> Support us with a coffee!
+              </p>
+              <DonateButton variant="outline" size="sm" />
+            </div>
           </div>
         )}
 
-
-
         {/* Privacy Notice */}
-        <div className="mt-12">
+        <div className="mt-8">
           <PrivacyNotice />
         </div>
 
-        {/* Support Section */}
-        <div className="mt-8 space-y-4">
-          <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-            <p>Love PDFo? <Coffee className="inline h-4 w-4 mx-1" /> Support us with a coffee!</p>
-          </div>
-          
-          <div className="text-center">
-            <DonateButton variant="outline" />
-          </div>
-        </div>
-
         {/* Advertisement */}
-        <div className="mt-8 mb-12">
+        <div className="mt-6 mb-8">
           <AdSenseAd 
             adSlot="your-ad-slot-id"
             adFormat="rectangle"
