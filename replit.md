@@ -198,6 +198,12 @@ The application follows a full-stack architecture with clear separation between 
   - **Content Recognition**: Word conversion intelligently detects names, headers, dates, emails, and phone numbers for appropriate styling
   - **Table Structure**: Excel conversion maintains original table structure with proper cell alignment and data formatting
   - **Multi-page Support**: Both conversions handle large documents across multiple pages with consistent formatting
+- July 08, 2025. Fixed founder photo display and added social media integration:
+  - **Photo Display Fix**: Resolved image loading issue on About page with proper assets route and circular photo styling
+  - **Social Media Integration**: Added Instagram, Facebook, and LinkedIn links to founder profile with branded buttons
+  - **Enhanced Styling**: Professional circular photo frame with PDFo blue border and shadow effects
+  - **Assets Route**: Added dedicated `/api/assets/:filename` endpoint for reliable image serving with proper caching
+  - **Social Media Buttons**: Interactive social media buttons with platform-specific colors and hover effects
 
 
 ## User Preferences
