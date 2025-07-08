@@ -1,4 +1,4 @@
-import { Shield, Zap, Smartphone } from "lucide-react";
+import { Shield, Zap, Smartphone, Heart } from "lucide-react";
 
 export function FeaturesSection() {
   const features = [
@@ -18,7 +18,7 @@ export function FeaturesSection() {
       description: "Use PDFo on any device - desktop, tablet, or mobile. No installation required.",
     },
     {
-      icon: Shield,
+      icon: Heart,
       title: "Free Forever",
       description: "All our PDF tools are completely free to use with no hidden costs or subscription fees.",
     },
