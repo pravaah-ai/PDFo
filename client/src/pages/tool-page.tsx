@@ -346,6 +346,16 @@ export default function ToolPage({ toolType }: ToolPageProps) {
       <Header />
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Back to Tools Button */}
+        <div className="mb-6">
+          <Link href="/#tools">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Tools
+            </Button>
+          </Link>
+        </div>
+
         {/* Tool Hero Section */}
         <ToolHero
           toolId={toolConfig.id}
@@ -354,16 +364,6 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           iconColor={toolConfig.iconColor}
           bgColor={toolConfig.bgColor}
         />
-
-        {/* Back to Tools Button */}
-        <div className="mt-6 mb-6">
-          <Link href="/#tools">
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Tools
-            </Button>
-          </Link>
-        </div>
 
         {/* Upload Section */}
         <div className="mt-8">
