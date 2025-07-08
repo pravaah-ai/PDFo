@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle, XCircle, Download, RotateCcw } from "lucide-react";
-import { ShareButton } from "@/components/share-button";
+
 
 interface ProcessingStatesProps {
   state: "idle" | "processing" | "success" | "error";
@@ -11,8 +11,6 @@ interface ProcessingStatesProps {
   onDownload?: () => void;
   onRetry?: () => void;
   onReset?: () => void;
-  toolName?: string;
-  fileName?: string;
 }
 
 export function ProcessingStates({
@@ -22,8 +20,6 @@ export function ProcessingStates({
   onDownload,
   onRetry,
   onReset,
-  toolName,
-  fileName,
 }: ProcessingStatesProps) {
   if (state === "idle") {
     return null;
@@ -69,14 +65,6 @@ export function ProcessingStates({
               <Download className="mr-2 h-4 w-4" />
               Download
             </Button>
-            {toolName && (
-              <ShareButton
-                toolName={toolName}
-                fileName={fileName}
-                variant="outline"
-                className="border-pdfo-blue text-pdfo-blue hover:bg-pdfo-blue hover:text-white"
-              />
-            )}
             <Button
               variant="outline"
               onClick={onReset}
