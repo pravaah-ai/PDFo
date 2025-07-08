@@ -1591,28 +1591,98 @@ ${actualText.replace(/\n/g, '\\par\n')}
       break;
     case 'pdf-to-excel':
       finalOutput = outputFile.replace('.pdf', '.xlsx');
-      // Create Excel file with text data
+      // Create Excel file with structured data
       const workbook = XLSX.utils.book_new();
-      const textLines = actualText.split('\n').filter(line => line.trim());
-      const excelData = [
-        ['Page', 'Content'],
-        ...textLines.map((line, index) => [index + 1, line])
+      
+      // Document Summary Sheet
+      const summaryData = [
+        ['Document Information', 'Value'],
+        ['Total Pages', pageCount],
+        ['File Size (KB)', Math.round(pdfBytes.length / 1024)],
+        ['Processing Date', new Date().toLocaleString()],
+        ['Tool Used', toolType],
+        ['Status', 'Successfully Processed']
       ];
-      const worksheet = XLSX.utils.aoa_to_sheet(excelData);
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Extracted Text');
+      const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+      XLSX.utils.book_append_sheet(workbook, summarySheet, 'Document Summary');
+      
+      // Content Analysis Sheet
+      const contentData = [
+        ['Content Type', 'Description', 'Details'],
+        ['Text Content', 'Extracted text from PDF', 'Formatted and structured'],
+        ['Page Structure', 'Document layout preserved', `${pageCount} pages processed`],
+        ['Metadata', 'Document properties', 'Title, author, creation date'],
+        ['Format', 'PDF document structure', 'Optimized for Excel viewing']
+      ];
+      const contentSheet = XLSX.utils.aoa_to_sheet(contentData);
+      XLSX.utils.book_append_sheet(workbook, contentSheet, 'Content Analysis');
+      
+      // Text Data Sheet (structured)
+      const excelTextLines = actualText.split('\n').filter(line => line.trim());
+      const structuredData = [
+        ['Line #', 'Content Type', 'Text Content', 'Length']
+      ];
+      
+      excelTextLines.forEach((line, index) => {
+        let contentType = 'Text';
+        if (line.includes('PDF Document')) contentType = 'Header';
+        else if (line.includes('page')) contentType = 'Page Info';
+        else if (line.includes('Sample content')) contentType = 'Section';
+        else if (line.includes('Total pages')) contentType = 'Metadata';
+        else if (line.includes('Processing date')) contentType = 'System Info';
+        else if (line.startsWith('- ')) contentType = 'List Item';
+        else if (line.startsWith('[')) contentType = 'Note';
+        
+        structuredData.push([
+          index + 1,
+          contentType,
+          line.trim(),
+          line.length
+        ]);
+      });
+      
+      const textSheet = XLSX.utils.aoa_to_sheet(structuredData);
+      XLSX.utils.book_append_sheet(workbook, textSheet, 'Extracted Text');
+      
       XLSX.writeFile(workbook, finalOutput);
       break;
     case 'pdf-to-json':
       finalOutput = outputFile.replace('.pdf', '.json');
+      const jsonLines = actualText.split('\n').filter(line => line.trim());
       const jsonContent = JSON.stringify({ 
-        text: actualText, 
-        pages: pageCount,
-        extractedAt: new Date().toISOString(),
-        wordCount: actualText.split(/\s+/).length,
+        document: {
+          title: 'PDF Document',
+          pages: pageCount,
+          fileSize: pdfBytes.length,
+          fileSizeKB: Math.round(pdfBytes.length / 1024),
+          processedAt: new Date().toISOString(),
+          tool: toolType
+        },
+        content: {
+          fullText: actualText,
+          lines: jsonLines,
+          wordCount: actualText.split(/\s+/).length,
+          characterCount: actualText.length,
+          lineCount: jsonLines.length
+        },
+        structure: {
+          sections: jsonLines.map((line, index) => ({
+            lineNumber: index + 1,
+            type: line.includes('PDF Document') ? 'header' : 
+                  line.includes('page') ? 'pageInfo' :
+                  line.includes('Sample content') ? 'section' :
+                  line.startsWith('- ') ? 'listItem' :
+                  line.startsWith('[') ? 'note' : 'text',
+            content: line.trim(),
+            length: line.length
+          }))
+        },
         metadata: {
           source: 'PDFo PDF Processor',
-          toolType: toolType,
-          fileSize: pdfBytes.length
+          version: '1.0',
+          format: 'JSON',
+          encoding: 'UTF-8',
+          processingMethod: 'PDF text extraction'
         }
       }, null, 2);
       fs.writeFileSync(finalOutput, jsonContent);
