@@ -3,8 +3,6 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { HeroSection } from "@/components/hero-section";
 import { ToolsGrid } from "@/components/tools-grid";
-import { FeaturesSection } from "@/components/features-section";
-import { SecuritySection } from "@/components/security-section";
 
 import { trackPageView } from "@/lib/analytics";
 
@@ -30,8 +28,6 @@ export default function Home() {
       <main>
         <HeroSection />
         <ToolsGrid />
-        <FeaturesSection />
-        <SecuritySection />
       </main>
       <Footer />
     </div>
