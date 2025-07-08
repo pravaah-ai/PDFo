@@ -26,8 +26,8 @@ export function ToolsGrid() {
                 onClick={() => handleToolClick(tool.id)}
               >
                 <CardContent className="p-6">
-                  <div className="flex items-center justify-center w-16 h-16 rounded-xl bg-blue-500 mb-4 transition-colors group-hover:scale-110">
-                    {getToolIcon(tool.id, "text-white w-8 h-8")}
+                  <div className={`flex items-center justify-center w-16 h-16 rounded-xl mb-4 transition-colors ${tool.bgColor} group-hover:scale-110`}>
+                    {getToolIcon(tool.id, tool.iconColor)}
                   </div>
                   <h3 className="text-lg font-semibold text-pdfo-dark-grey mb-2">
                     {tool.title}
