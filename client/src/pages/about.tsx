@@ -224,9 +224,43 @@ export default function About() {
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                   Purvish Patel
                 </h3>
-                <p className="text-blue-600 dark:text-blue-400 font-semibold mb-3">
+                <p className="text-blue-600 dark:text-blue-400 font-semibold mb-2">
                   Founder & Developer
                 </p>
+                
+                {/* Social Media Icons */}
+                <div className="flex justify-center space-x-4 mb-4">
+                  <a
+                    href="https://www.instagram.com/purvish_patidar"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-md hover:shadow-lg"
+                    title="Follow on Instagram"
+                  >
+                    <Instagram className="h-5 w-5" />
+                  </a>
+                  
+                  <a
+                    href="https://www.facebook.com/share/16XfKEbatv/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                    title="Connect on Facebook"
+                  >
+                    <Facebook className="h-5 w-5" />
+                  </a>
+                  
+                  <a
+                    href="https://www.linkedin.com/in/purvish-patel-a54480371?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 bg-blue-700 text-white rounded-full hover:bg-blue-800 transition-all duration-200 shadow-md hover:shadow-lg"
+                    title="Connect on LinkedIn"
+                  >
+                    <Linkedin className="h-5 w-5" />
+                  </a>
+                </div>
+                
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                   Khambhat, Gujarat, India
                 </p>
@@ -246,47 +280,7 @@ export default function About() {
                     millions of users.
                   </p>
                 </div>
-                
-                {/* Social Media Links */}
-                <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 text-center">
-                    Connect with Purvish
-                  </h4>
-                  <div className="flex justify-center space-x-4">
-                    <a
-                      href="https://www.instagram.com/purvish_patidar"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 shadow-md hover:shadow-lg"
-                    >
-                      <Instagram className="h-5 w-5" />
-                      <span className="text-sm font-medium">Instagram</span>
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
-                    
-                    <a
-                      href="https://www.facebook.com/share/16XfKEbatv/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg"
-                    >
-                      <Facebook className="h-5 w-5" />
-                      <span className="text-sm font-medium">Facebook</span>
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
-                    
-                    <a
-                      href="https://www.linkedin.com/in/purvish-patel-a54480371?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center space-x-2 px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-all duration-200 shadow-md hover:shadow-lg"
-                    >
-                      <Linkedin className="h-5 w-5" />
-                      <span className="text-sm font-medium">LinkedIn</span>
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
-                  </div>
-                </div>
+
               </CardContent>
             </Card>
           </div>
