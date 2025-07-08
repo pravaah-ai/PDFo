@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Header } from "@/components/header";
 import { ToolFooter } from "@/components/tool-footer";
-import { FileUpload } from "@/components/file-upload";
+import { ToolHero } from "@/components/tool-hero";
+import { UploadSection } from "@/components/upload-section";
 import { ProcessingStates } from "@/components/processing-states";
 import { DonateButton } from "@/components/donate-button";
 import { Button } from "@/components/ui/button";
@@ -148,6 +149,16 @@ export default function ToolPage({ toolType }: ToolPageProps) {
   return (
     <div className="min-h-screen bg-white">
       <Header />
+      
+      {/* Hero Section */}
+      <ToolHero 
+        toolId={toolConfig.id}
+        title={toolConfig.title}
+        description={toolConfig.description}
+        iconColor={toolConfig.iconColor}
+        bgColor={toolConfig.bgColor}
+      />
+      
       <main className="pt-6 pb-16 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back to Tools Button */}
@@ -160,16 +171,7 @@ export default function ToolPage({ toolType }: ToolPageProps) {
             </Link>
           </div>
 
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-pdfo-dark-grey mb-4">
-              {toolConfig.title}
-            </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              {toolConfig.description}
-            </p>
-          </div>
-
-          <FileUpload
+          <UploadSection
             acceptedFileTypes={toolConfig.acceptedFiles.split(',')}
             onFilesSelected={handleFilesSelected}
             className="mb-8"
