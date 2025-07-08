@@ -33,6 +33,8 @@ function Router() {
       <Route path="/pdf-to-excel" component={() => <ToolPage toolType="pdf-to-excel" />} />
       <Route path="/png-to-pdf" component={() => <ToolPage toolType="png-to-pdf" />} />
       <Route path="/word-to-pdf" component={() => <ToolPage toolType="word-to-pdf" />} />
+      <Route path="/lock-pdf" component={() => <ToolPage toolType="lock-pdf" />} />
+      <Route path="/unlock-pdf" component={() => <ToolPage toolType="unlock-pdf" />} />
       <Route component={NotFound} />
     </Switch>
   );

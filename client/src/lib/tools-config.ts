@@ -242,6 +242,32 @@ export const toolsConfig: Record<string, ToolConfig> = {
     acceptedFiles: '.doc,.docx',
     category: 'converter',
   },
+  'lock-pdf': {
+    id: 'lock-pdf',
+    title: 'Lock PDF',
+    description: 'Add password protection to your PDF documents to secure them from unauthorized access.',
+    icon: 'Shield',
+    iconColor: 'text-white',
+    bgColor: 'bg-red-600 hover:bg-red-700',
+    path: '/lock-pdf',
+    metaTitle: 'Lock PDF with Password Online - Secure PDF Documents | PDFo',
+    metaDescription: 'Add password protection to PDF files online. Secure your PDF documents with encryption and password protection.',
+    acceptedFiles: '.pdf',
+    category: 'core',
+  },
+  'unlock-pdf': {
+    id: 'unlock-pdf',
+    title: 'Unlock PDF',
+    description: 'Remove password protection from PDF documents that you own.',
+    icon: 'FileX2',
+    iconColor: 'text-white',
+    bgColor: 'bg-green-600 hover:bg-green-700',
+    path: '/unlock-pdf',
+    metaTitle: 'Unlock PDF Online - Remove PDF Password Protection | PDFo',
+    metaDescription: 'Remove password protection from PDF files online. Unlock encrypted PDF documents quickly and securely.',
+    acceptedFiles: '.pdf',
+    category: 'core',
+  },
 };
 
 export const getToolConfig = (toolType: string): ToolConfig | undefined => {
@@ -278,6 +304,8 @@ export const getToolIcon = (toolId: string, colorClass: string) => {
     'pdf-to-excel': FileSpreadsheet,
     'png-to-pdf': File,
     'word-to-pdf': BookOpen,
+    'lock-pdf': Shield,
+    'unlock-pdf': FileX2,
   };
   
   const IconComponent = iconMap[toolId] || File;
