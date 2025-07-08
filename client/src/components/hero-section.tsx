@@ -13,7 +13,7 @@ export function HeroSection() {
         <p className="text-lg lg:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
           Merge, split, convert, and edit your PDF files with our comprehensive suite of professional tools. Fast, secure, and completely free.
         </p>
-        <div className="max-w-sm mx-auto">
+        <div className="max-w-sm mx-auto space-y-4">
           <Link href="#tools">
             <Button
               size="lg"
@@ -22,6 +22,18 @@ export function HeroSection() {
               Explore Tools
             </Button>
           </Link>
+          
+          <div className="flex justify-center">
+            <a
+              href="https://www.buymeacoffee.com/pravaahaitech"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-black font-medium rounded-lg transition-colors"
+            >
+              <span className="mr-2">☕</span>
+              Buy me a coffee
+            </a>
+          </div>
         </div>
       </div>
     </section>
