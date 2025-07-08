@@ -3,7 +3,9 @@ import {
   FileX2, Scissors, Trash2, RotateCw, Droplets, 
   Minimize, Maximize, Shield, FileText, File, 
   FileImage, FileSpreadsheet, Image, BookOpen,
-  Zap, Palette, Files
+  Zap, Palette, Files, Hash, Edit, Unlock, 
+  ArrowUpDown, Info, Braces, Presentation, Key,
+  Settings, Code, Monitor, ListOrdered, Shuffle
 } from "lucide-react";
 
 export interface ToolConfig {
@@ -341,23 +343,23 @@ export const getToolIcon = (toolId: string, colorClass: string) => {
     'delete-pdf-pages': Trash2,
     'rotate-pdf': RotateCw,
     'watermark-pdf': Droplets,
-    'page-numbers-pdf': Palette,
-    'pdf-editor': Zap,
+    'page-numbers-pdf': Hash,
+    'pdf-editor': Edit,
     'pdf-to-jpg': FileImage,
     'pdf-to-png': Image,
     'pdf-to-tiff': FileImage,
-    'pdf-to-json': Zap,
+    'pdf-to-json': Braces,
     'pdf-to-word': FileText,
-    'pdf-to-ppt': File,
+    'pdf-to-ppt': Presentation,
     'pdf-to-txt': FileText,
     'pdf-to-excel': FileSpreadsheet,
-    'png-to-pdf': File,
+    'png-to-pdf': FileImage,
     'word-to-pdf': BookOpen,
     'lock-pdf': Shield,
-    'unlock-pdf': FileX2,
+    'unlock-pdf': Unlock,
     'compress-pdf': Minimize,
-    'reorder-pages': Files,
-    'edit-metadata': FileText,
+    'reorder-pages': ArrowUpDown,
+    'edit-metadata': Settings,
     'excel-to-pdf': FileSpreadsheet,
   };
   
