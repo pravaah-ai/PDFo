@@ -11,7 +11,7 @@ export function ToolsGrid() {
   };
 
   return (
-    <section id="tools" className="py-20 bg-white">
+    <section id="tools" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-pdfo-dark-grey mb-4">Choose Your Tool</h2>
@@ -26,8 +26,8 @@ export function ToolsGrid() {
                 onClick={() => handleToolClick(tool.id)}
               >
                 <CardContent className="p-6">
-                  <div className={`flex items-center justify-center w-16 h-16 rounded-xl mb-4 transition-colors ${tool.bgColor} group-hover:scale-110`}>
-                    {getToolIcon(tool.id, tool.iconColor)}
+                  <div className="flex items-center justify-center w-16 h-16 rounded-xl bg-blue-500 mb-4 transition-colors group-hover:scale-110">
+                    {getToolIcon(tool.id, "text-white w-8 h-8")}
                   </div>
                   <h3 className="text-lg font-semibold text-pdfo-dark-grey mb-2">
                     {tool.title}

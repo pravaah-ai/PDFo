@@ -3,7 +3,7 @@ import { Link } from "wouter";
 
 export function HeroSection() {
   return (
-    <section className="bg-gradient-to-b from-blue-50 via-slate-50 to-gray-100 py-16 lg:py-24">
+    <section className="bg-white py-16 lg:py-24">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 className="text-4xl lg:text-6xl font-bold text-pdfo-dark-grey mb-6 leading-tight">
           Professional PDF Tools
@@ -25,7 +25,7 @@ export function HeroSection() {
           <Button
             variant="outline"
             size="lg"
-            className="border-gray-300 text-gray-600 hover:bg-white px-8 py-4 text-lg font-medium rounded-lg w-full bg-white/80 backdrop-blur-sm"
+            className="border-gray-300 text-gray-600 hover:bg-gray-50 px-8 py-4 text-lg font-medium rounded-lg w-full"
             asChild
           >
             <a
