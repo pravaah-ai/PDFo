@@ -3,7 +3,7 @@ import { Link } from "wouter";
 
 export function HeroSection() {
   return (
-    <section className="bg-gradient-to-b from-gray-50 to-white py-20 lg:py-32">
+    <section className="bg-gradient-to-b from-blue-50 via-gray-50 to-white py-20 lg:py-32">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 className="text-4xl lg:text-6xl font-bold text-pdfo-dark-grey mb-6 leading-tight">
           Professional PDF Tools
