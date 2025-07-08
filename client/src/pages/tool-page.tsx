@@ -21,6 +21,7 @@ import { WatermarkOptions } from "@/components/watermark-options";
 import { LockOptions } from "@/components/lock-options";
 import { UnlockOptions } from "@/components/unlock-options";
 import { CompressOptions } from "@/components/compress-options";
+import { PDFEditor } from "@/components/pdf-editor";
 
 import { Button } from "@/components/ui/button";
 import { getToolConfig } from "@/lib/tools-config";
@@ -124,7 +125,8 @@ export default function ToolPage({ toolType }: ToolPageProps) {
     originalSize: 0
   });
 
-  
+  const [showPdfEditor, setShowPdfEditor] = useState(false);
+
   const { toast } = useToast();
   const toolConfig = getToolConfig(toolType);
 
@@ -220,6 +222,11 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           });
         }
       }
+    }
+
+    // Auto-open PDF editor for edit-pdf tool
+    if (toolType === "edit-pdf" && selectedFiles.length > 0) {
+      setShowPdfEditor(true);
     }
   };
 
@@ -413,7 +420,53 @@ export default function ToolPage({ toolType }: ToolPageProps) {
     setJobId("");
     setBatchJobs([]);
     setFiles([]);
+    setShowPdfEditor(false);
+  };
 
+  const handlePdfEditorSave = async (editedFile: File) => {
+    setShowPdfEditor(false);
+    setFiles([editedFile]);
+    setProcessingState("processing");
+    setProgress(0);
+    
+    try {
+      const jobResponse = await createPdfJob(toolType, [editedFile]);
+      setJobId(jobResponse.jobId);
+      
+      // Poll for job completion
+      const result = await pollJobStatus(jobResponse.jobId);
+      
+      if (result.status === "completed") {
+        setProcessingState("success");
+        setProgress(100);
+        
+        // Track successful completion
+        trackEvent('pdf_processing_complete', {
+          tool_type: toolType,
+          file_count: 1,
+          processing_time: Date.now() - Date.now()
+        });
+        
+        toast({
+          title: "Success!",
+          description: "Your PDF has been processed successfully.",
+          duration: 3000,
+        });
+      } else {
+        throw new Error(result.error || "Processing failed");
+      }
+    } catch (error) {
+      console.error('Processing error:', error);
+      setProcessingState("error");
+      setErrorMessage(error instanceof Error ? error.message : "Unknown error occurred");
+      
+      toast({
+        title: "Error",
+        description: "Failed to process PDF. Please try again.",
+        variant: "destructive",
+        duration: 5000,
+      });
+    }
   };
 
   const handleRetry = () => {
@@ -647,10 +700,18 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           <PrivacyNotice />
         </div>
 
-
       </main>
       
       <ToolFooter />
+
+      {/* PDF Editor Modal */}
+      {showPdfEditor && files.length > 0 && (
+        <PDFEditor
+          files={files}
+          onSave={handlePdfEditorSave}
+          onClose={() => setShowPdfEditor(false)}
+        />
+      )}
 
     </div>
   );

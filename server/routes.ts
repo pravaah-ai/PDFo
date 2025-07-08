@@ -1471,18 +1471,20 @@ async function editPdf(inputFile: string, outputFile: string): Promise<string> {
     });
     
     // Add editing tools indicators
-    const tools = ['✏️', '🔍', '📝', '🎨', '📐'];
+    const tools = ['Edit', 'View', 'Text', 'Draw', 'Tool'];
     tools.forEach((tool, toolIndex) => {
       page.drawText(tool, {
-        x: 50 + (toolIndex * 30),
+        x: 50 + (toolIndex * 40),
         y: height - 50,
-        size: 12,
+        size: 10,
+        font: helveticaFont,
+        color: rgb(0.2, 0.2, 0.2),
       });
     });
     
     // Add edit indicator text
     page.drawText('PDF EDITOR - MODIFICATIONS APPLIED', {
-      x: 50 + (tools.length * 30) + 20,
+      x: 50 + (tools.length * 40) + 20,
       y: height - 45,
       size: 8,
       font: helveticaFont,
