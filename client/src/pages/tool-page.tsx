@@ -356,7 +356,7 @@ export default function ToolPage({ toolType }: ToolPageProps) {
         />
 
         {/* Back to Tools Button */}
-        <div className="mb-6">
+        <div className="mt-6 mb-6">
           <Link href="/#tools">
             <Button variant="outline" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -546,14 +546,7 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           <PrivacyNotice />
         </div>
 
-        {/* Advertisement */}
-        <div className="mt-6 mb-8">
-          <AdSenseAd 
-            adSlot="your-ad-slot-id"
-            adFormat="rectangle"
-            className="mx-auto"
-          />
-        </div>
+
       </main>
       
       <ToolFooter />
