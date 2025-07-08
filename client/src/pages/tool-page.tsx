@@ -276,6 +276,8 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           options = deleteOptions;
         } else if (toolType === 'rotate-pdf') {
           options = rotateOptions;
+        } else if (toolType === 'page-numbers-pdf') {
+          options = pageNumbersOptions;
         }
         const jobResponse = await createPdfJob(toolType, files, options);
         setJobId(jobResponse.jobId);
@@ -519,7 +521,7 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           </div>
         )}
 
-        {toolType === "add-page-numbers" && files.length > 0 && processingState === "idle" && (
+        {toolType === "page-numbers-pdf" && files.length > 0 && processingState === "idle" && (
           <div className="mt-6">
             <PageNumbersOptions
               options={pageNumbersOptions}

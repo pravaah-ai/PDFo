@@ -237,7 +237,7 @@ Allow: /`);
   // Create PDF job endpoint
   app.post("/api/pdf/process", upload.array("files"), async (req, res) => {
     try {
-      const { toolType, splitOptions, reorderOptions, deleteOptions } = req.body;
+      const { toolType, splitOptions, reorderOptions, deleteOptions, pageNumbersOptions } = req.body;
       const files = req.files as Express.Multer.File[];
       
       console.log(`Processing PDF job - Tool: ${toolType}, Files: ${files?.length}`);
@@ -313,6 +313,12 @@ Allow: /`);
                 parsedOptions = JSON.parse(req.body.rotateOptions);
               } catch (e) {
                 console.error("Invalid rotate options:", e);
+              }
+            } else if (pageNumbersOptions) {
+              try {
+                parsedOptions = JSON.parse(pageNumbersOptions);
+              } catch (e) {
+                console.error("Invalid page numbers options:", e);
               }
             }
             const outputFile = await processPdfJob(job.jobId, toolType, inputFiles, parsedOptions);
@@ -542,7 +548,7 @@ async function processPdfJob(jobId: string, toolType: string, inputFiles: string
         return await watermarkPdf(inputFiles[0], outputFile);
       
       case 'page-numbers-pdf':
-        return await addPageNumbers(inputFiles[0], outputFile);
+        return await addPageNumbers(inputFiles[0], outputFile, options);
       
       case 'delete-pdf-pages':
         return await removePages(inputFiles[0], outputFile, options);
@@ -768,20 +774,71 @@ async function watermarkPdf(inputFile: string, outputFile: string): Promise<stri
   return outputFile;
 }
 
-async function addPageNumbers(inputFile: string, outputFile: string): Promise<string> {
+async function addPageNumbers(inputFile: string, outputFile: string, pageNumbersOptions?: any): Promise<string> {
   const pdfBytes = fs.readFileSync(inputFile);
   const pdf = await PDFDocument.load(pdfBytes);
   const helveticaFont = await pdf.embedFont(StandardFonts.Helvetica);
   
+  // Get options or use defaults
+  const position = pageNumbersOptions?.position || 'bottom-center';
+  const startFrom = pageNumbersOptions?.startFrom || 1;
+  const fontSize = pageNumbersOptions?.fontSize || 12;
+  const color = pageNumbersOptions?.color || '#000000';
+  
+  // Convert hex color to RGB
+  const hexToRgb = (hex: string) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16) / 255,
+      g: parseInt(result[2], 16) / 255,
+      b: parseInt(result[3], 16) / 255,
+    } : { r: 0, g: 0, b: 0 };
+  };
+  
+  const textColor = hexToRgb(color);
+  
   const pages = pdf.getPages();
   pages.forEach((page, index) => {
     const { width, height } = page.getSize();
-    page.drawText(`${index + 1}`, {
-      x: width / 2,
-      y: 30,
-      size: 12,
+    const pageNumber = index + startFrom;
+    
+    // Calculate position based on selection
+    let x = width / 2; // Default center
+    let y = 30; // Default bottom
+    
+    switch (position) {
+      case 'top-left':
+        x = 50;
+        y = height - 50;
+        break;
+      case 'top-center':
+        x = width / 2;
+        y = height - 50;
+        break;
+      case 'top-right':
+        x = width - 50;
+        y = height - 50;
+        break;
+      case 'bottom-left':
+        x = 50;
+        y = 30;
+        break;
+      case 'bottom-center':
+        x = width / 2;
+        y = 30;
+        break;
+      case 'bottom-right':
+        x = width - 50;
+        y = 30;
+        break;
+    }
+    
+    page.drawText(`${pageNumber}`, {
+      x: x,
+      y: y,
+      size: fontSize,
       font: helveticaFont,
-      color: rgb(0, 0, 0),
+      color: rgb(textColor.r, textColor.g, textColor.b),
     });
   });
   

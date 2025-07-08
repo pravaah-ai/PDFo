@@ -121,19 +121,19 @@ export function PageNumbersOptions({ options, onOptionsChange, className }: Page
               <SelectValue placeholder="Select color" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="black">Black</SelectItem>
-              <SelectItem value="gray">Gray</SelectItem>
-              <SelectItem value="blue">Blue</SelectItem>
-              <SelectItem value="red">Red</SelectItem>
-              <SelectItem value="green">Green</SelectItem>
-              <SelectItem value="white">White</SelectItem>
+              <SelectItem value="#000000">Black</SelectItem>
+              <SelectItem value="#666666">Gray</SelectItem>
+              <SelectItem value="#0066cc">Blue</SelectItem>
+              <SelectItem value="#cc0000">Red</SelectItem>
+              <SelectItem value="#00cc00">Green</SelectItem>
+              <SelectItem value="#ffffff">White</SelectItem>
             </SelectContent>
           </Select>
         </div>
         
         <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
           <p className="text-sm text-blue-800 dark:text-blue-200">
-            <strong>Preview:</strong> Page numbers will appear at {options.position.replace('-', ' ')} in {options.color} color, starting from page {options.startFrom}.
+            <strong>Preview:</strong> Page numbers will appear at {options.position.replace('-', ' ')} in {options.fontSize}pt font, starting from page {options.startFrom}.
           </p>
         </div>
       </CardContent>
