@@ -9,7 +9,7 @@ interface FileUploadState {
 
 interface UseFileUploadOptions {
   acceptedFileTypes?: string[];
-  maxFileSize?: number; // in bytes
+  maxFileSize?: number; // in bytes (default: 25MB)
   maxFiles?: number;
   onFilesSelected?: (files: File[]) => void;
 }
@@ -17,7 +17,7 @@ interface UseFileUploadOptions {
 export function useFileUpload(options: UseFileUploadOptions = {}) {
   const {
     acceptedFileTypes = [],
-    maxFileSize = 50 * 1024 * 1024, // 50MB default
+    maxFileSize = 25 * 1024 * 1024, // 25MB default
     maxFiles = 10,
     onFilesSelected,
   } = options;
@@ -51,7 +51,7 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
     if (file.size > maxFileSize) {
       toast({
         title: "File too large",
-        description: `File size must be less than ${Math.round(maxFileSize / 1024 / 1024)}MB`,
+        description: `File size must be less than 25MB for optimal processing`,
         variant: "destructive",
       });
       return false;

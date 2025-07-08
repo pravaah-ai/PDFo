@@ -14,7 +14,12 @@ import mammoth from 'mammoth';
 import XLSX from 'xlsx';
 import Jimp from 'jimp';
 
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ 
+  dest: "uploads/",
+  limits: {
+    fileSize: 25 * 1024 * 1024, // 25MB limit
+  },
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -239,7 +244,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const fileExtension = path.extname(job.outputFile);
-      const filename = `${job.toolType}-${job.jobId}${fileExtension}`;
+      const filename = `PDFo_${job.toolType}_${job.jobId}${fileExtension}`;
       
       // Set appropriate content type based on file extension
       let contentType = "application/pdf";
@@ -280,7 +285,7 @@ async function processPdfJob(jobId: string, toolType: string, inputFiles: string
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  const outputFile = path.join(outputDir, `${jobId}.pdf`);
+  const outputFile = path.join(outputDir, `PDFo_${toolType}_${jobId}.pdf`);
   
   try {
     switch (toolType) {

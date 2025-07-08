@@ -43,7 +43,7 @@ export function BatchProcessing({ jobs, onDownloadAll, onReset }: BatchProcessin
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = fileName.replace(/\.[^/.]+$/, '') + '_processed.pdf';
+      a.download = `PDFo_processed_${jobId}.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

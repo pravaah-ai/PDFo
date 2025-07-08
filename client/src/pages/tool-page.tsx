@@ -7,6 +7,7 @@ import { ProcessingStates } from "@/components/processing-states";
 import { BatchProcessing } from "@/components/batch-processing";
 import { DonateButton } from "@/components/donate-button";
 import { AdSenseAd } from "@/components/adsense-ad";
+import { PrivacyNotice } from "@/components/privacy-notice";
 
 import { Button } from "@/components/ui/button";
 import { getToolConfig } from "@/lib/tools-config";
@@ -168,7 +169,7 @@ export default function ToolPage({ toolType }: ToolPageProps) {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${toolConfig.title.toLowerCase().replace(/\s+/g, '-')}-${jobId}.pdf`;
+      a.download = `PDFo_${toolType}_${jobId}.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -189,7 +190,7 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `${job.fileName}-processed.pdf`;
+          a.download = `PDFo_${toolType}_${job.jobId}.pdf`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
@@ -253,6 +254,9 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           iconColor={toolConfig.iconColor}
           bgColor={toolConfig.bgColor}
         />
+
+        {/* Privacy Notice */}
+        <PrivacyNotice />
         
         {/* Upload Section */}
         <div className="mt-8">
