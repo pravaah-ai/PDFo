@@ -8,7 +8,7 @@ export interface SitemapEntry {
 }
 
 export function generateSitemap(): string {
-  const baseUrl = "https://pdfo.replit.app";
+  const baseUrl = "https://pdfo.io";
   const lastmod = new Date().toISOString().split('T')[0];
   
   const entries: SitemapEntry[] = [
@@ -66,7 +66,7 @@ Disallow: /uploads/
 Disallow: /outputs/
 
 # Sitemap
-Sitemap: https://pdfo.replit.app/sitemap.xml
+Sitemap: https://pdfo.io/sitemap.xml
 
 # Crawl delay
 Crawl-delay: 1

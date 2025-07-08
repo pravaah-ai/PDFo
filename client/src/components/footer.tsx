@@ -32,6 +32,9 @@ export function Footer() {
           <p className="text-slate-400 dark:text-gray-400 text-base max-w-2xl">
             Your complete PDF toolkit for all your document needs. Fast, secure, and completely free online PDF tools to merge, split, convert, and edit your PDF files with professional quality.
           </p>
+          <p className="text-slate-400 dark:text-gray-400 text-sm mt-3">
+            Proudly developed by <strong>Pravaah AI Tech</strong> | Contact: contact@pdfo.io
+          </p>
         </div>
 
         {/* Social Media Icons */}

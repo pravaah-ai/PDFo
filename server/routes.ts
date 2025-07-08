@@ -38,7 +38,7 @@ Disallow: /uploads/
 Disallow: /outputs/
 
 # Sitemap
-Sitemap: https://pdfo.replit.app/sitemap.xml
+Sitemap: https://pdfo.io/sitemap.xml
 
 # Crawl delay
 Crawl-delay: 1
@@ -55,7 +55,7 @@ Allow: /`);
   });
 
   app.get("/sitemap.xml", (req, res) => {
-    const baseUrl = "https://pdfo.replit.app";
+    const baseUrl = "https://pdfo.io";
     const lastmod = new Date().toISOString().split('T')[0];
     
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

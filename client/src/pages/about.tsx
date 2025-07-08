@@ -205,6 +205,51 @@ export default function About() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Team Section */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+            Meet Our Team
+          </h2>
+          <div className="max-w-md mx-auto">
+            <Card className="text-center">
+              <CardContent className="p-8">
+                <div className="mb-6">
+                  <img 
+                    src="/attached_assets/image_1751993053503.jpg" 
+                    alt="Purvish Patel - Founder of Pravaah AI Tech"
+                    className="w-32 h-32 rounded-full mx-auto object-cover border-4 border-blue-500"
+                  />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  Purvish Patel
+                </h3>
+                <p className="text-blue-600 dark:text-blue-400 font-semibold mb-3">
+                  Founder & Developer
+                </p>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  Khambhat, Gujarat, India
+                </p>
+                <div className="space-y-3 text-left">
+                  <p className="text-gray-700 dark:text-gray-300">
+                    <strong>Company:</strong> Pravaah AI Tech
+                  </p>
+                  <p className="text-gray-700 dark:text-gray-300">
+                    Purvish is the visionary founder of Pravaah AI Tech and the sole developer behind PDFo. 
+                    With a passion for creating user-friendly digital tools, he has single-handedly built 
+                    this comprehensive PDF processing platform to help users worldwide manage their documents 
+                    efficiently and securely.
+                  </p>
+                  <p className="text-gray-700 dark:text-gray-300">
+                    Based in Khambhat, Gujarat, Purvish combines technical expertise with entrepreneurial 
+                    vision to deliver innovative solutions that simplify complex document workflows for 
+                    millions of users.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </main>
 
       <Footer />

@@ -184,6 +184,13 @@ The application follows a full-stack architecture with clear separation between 
   - **Social Media Integration**: Open Graph and Twitter Card meta tags for improved social sharing appearance
   - **Mobile SEO**: Responsive design with proper viewport meta tags and mobile-friendly structured data
   - **Technical SEO**: Proper HTML semantics, heading structure, and crawlable URL structure for all 23 PDF tools
+- July 08, 2025. Added founder team section and updated domain references:
+  - **Team Section**: Added "Meet Our Team" section to About page featuring Purvish Patel as founder and developer
+  - **Founder Profile**: Professional profile card with photo, location (Khambhat, Gujarat, India), and company details
+  - **Domain Updates**: Updated all references from pdfo.replit.app to pdfo.io throughout the application
+  - **Company Attribution**: Added Pravaah AI Tech ownership information in footer and about page
+  - **Contact Information**: Added contact@pdfo.io email address for user inquiries
+  - **Personal Story**: Highlighted that Purvish single-handedly developed the entire PDFo platform
 
 
 ## User Preferences
