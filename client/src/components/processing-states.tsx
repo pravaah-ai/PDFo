@@ -27,16 +27,16 @@ export function ProcessingStates({
   if (state === "processing") {
     return (
       <Card className="border-blue-200 bg-blue-50">
-        <CardContent className="p-8 text-center">
-          <div className="flex items-center justify-center space-x-3 mb-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pdfo-blue"></div>
-            <span className="text-lg font-medium text-pdfo-dark-grey">
+        <CardContent className="p-6 text-center">
+          <div className="flex items-center justify-center space-x-3 mb-3">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-pdfo-blue"></div>
+            <span className="text-base font-medium text-pdfo-dark-grey">
               Processing your files...
             </span>
           </div>
           <div className="max-w-md mx-auto">
             <Progress value={progress} className="h-2" />
-            <p className="text-sm text-gray-600 mt-2">{progress}% complete</p>
+            <p className="text-xs text-gray-600 mt-2">{progress}% complete</p>
           </div>
         </CardContent>
       </Card>
@@ -46,8 +46,8 @@ export function ProcessingStates({
   if (state === "success") {
     return (
       <Card className="border-green-200 bg-green-50">
-        <CardContent className="p-8 text-center">
-          <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4 mx-auto">
+        <CardContent className="p-6 text-center">
+          <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-3 mx-auto">
             <CheckCircle className="h-8 w-8 text-green-600" />
           </div>
           <h3 className="text-xl font-semibold text-pdfo-dark-grey mb-2">

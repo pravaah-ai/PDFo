@@ -241,10 +241,10 @@ export default function ToolPage({ toolType }: ToolPageProps) {
       <Header />
       
       {/* Back to Tools Button */}
-      <div className="bg-white py-6">
+      <div className="bg-white py-4 border-b border-gray-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link href="/">
-            <Button variant="outline" className="flex items-center gap-2 hover:bg-gray-50">
+            <Button variant="outline" className="flex items-center gap-1.5 text-sm hover:bg-gray-50">
               <ArrowLeft className="h-4 w-4" />
               Back to Tools
             </Button>
@@ -269,15 +269,15 @@ export default function ToolPage({ toolType }: ToolPageProps) {
       
       {/* Processing Button Section */}
       {files.length > 0 && processingState === "idle" && (
-        <div className="bg-white py-8">
+        <div className="bg-white py-6 border-b border-gray-100">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="space-y-4">
+            <div className="space-y-3">
               {batchMode && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                  <p className="text-blue-800 font-medium mb-2">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+                  <p className="text-blue-800 font-medium text-sm mb-1">
                     🎯 Batch Processing Mode
                   </p>
-                  <p className="text-blue-700 text-sm">
+                  <p className="text-blue-700 text-xs">
                     You've selected {files.length} files. They will be processed individually and you can download each result separately.
                   </p>
                 </div>
@@ -286,9 +286,9 @@ export default function ToolPage({ toolType }: ToolPageProps) {
               <Button
                 onClick={handleProcess}
                 size="lg"
-                className="bg-pdfo-blue hover:bg-pdfo-blue-light text-white px-8 py-4 text-lg"
+                className="bg-pdfo-blue hover:bg-pdfo-blue-light text-white px-6 py-3 text-base"
               >
-                <WandSparkles className="mr-2 h-5 w-5" />
+                <WandSparkles className="mr-2 h-4 w-4" />
                 {batchMode ? `Process ${files.length} Files` : toolConfig.title}
               </Button>
             </div>
@@ -296,7 +296,7 @@ export default function ToolPage({ toolType }: ToolPageProps) {
         </div>
       )}
       
-      <main className="pt-6 pb-16 bg-white">
+      <main className="pt-4 pb-12 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
           {batchMode && processingState !== "idle" ? (

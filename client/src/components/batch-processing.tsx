@@ -94,17 +94,17 @@ export function BatchProcessing({ jobs, onDownloadAll, onReset }: BatchProcessin
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Overall Progress */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Archive className="h-5 w-5" />
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Archive className="h-4 w-4" />
             Batch Processing Progress
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
+        <CardContent className="pt-0">
+          <div className="space-y-3">
             <Progress value={overallProgress} className="w-full" />
             <div className="flex justify-between text-sm text-gray-600">
               <span>{completedJobs.length + failedJobs.length} of {jobs.length} files processed</span>
@@ -135,11 +135,11 @@ export function BatchProcessing({ jobs, onDownloadAll, onReset }: BatchProcessin
 
       {/* Individual Job Status */}
       <Card>
-        <CardHeader>
-          <CardTitle>File Processing Status</CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">File Processing Status</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
+        <CardContent className="pt-0">
+          <div className="space-y-2">
             {jobs.map((job) => (
               <div key={job.jobId} className="flex items-center justify-between p-3 border rounded-lg">
                 <div className="flex items-center gap-3 flex-1">
