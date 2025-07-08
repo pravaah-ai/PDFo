@@ -15,8 +15,7 @@ export function HeroSection() {
         </p>
         <div className="max-w-sm mx-auto space-y-4">
           <Button
-            size="lg"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-medium rounded-lg w-full shadow-sm"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 font-medium rounded-lg w-full shadow-sm"
             onClick={() => {
               const toolsSection = document.getElementById('tools');
               if (toolsSection) {
@@ -32,10 +31,10 @@ export function HeroSection() {
               href="https://www.buymeacoffee.com/pravaahaitech"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-medium rounded-lg transition-colors shadow-sm"
+              className="inline-flex items-center px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-medium rounded-lg transition-colors shadow-sm w-full justify-center"
             >
-              <span className="mr-2">☕☕☕</span>
-              Buy me lots of coffee
+              <span className="mr-2">☕</span>
+              Buy me a coffee
             </a>
           </div>
         </div>
