@@ -20,8 +20,8 @@ export function ToolHero({ toolId, title, description, iconColor, bgColor }: Too
     <section className="bg-white py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Tool Icon */}
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-blue-500 mb-4">
-          {getToolIcon(toolId, "text-white w-7 h-7")}
+        <div className={`inline-flex items-center justify-center w-14 h-14 rounded-xl mb-4 ${bgColor}`}>
+          {getToolIcon(toolId, iconColor + " w-7 h-7")}
         </div>
         
         {/* Title */}
