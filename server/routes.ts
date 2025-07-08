@@ -7,6 +7,8 @@ import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import fs from "fs";
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import sharp from "sharp";
 
 const upload = multer({ dest: "uploads/" });
 
@@ -85,7 +87,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Tool type is required" });
       }
 
-      const jobs: PdfJobResponse[] = [];
+      const jobs: any[] = [];
 
       // Create a job for each file (for tools that process individual files)
       // or create a single job for all files (for tools like merge)
@@ -208,9 +210,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: "File not found on disk" });
       }
 
-      const filename = `${job.toolType}-${job.jobId}.pdf`;
+      const fileExtension = path.extname(job.outputFile);
+      const filename = `${job.toolType}-${job.jobId}${fileExtension}`;
+      
+      // Set appropriate content type based on file extension
+      let contentType = "application/pdf";
+      if (fileExtension === ".jpg" || fileExtension === ".jpeg") {
+        contentType = "image/jpeg";
+      } else if (fileExtension === ".png") {
+        contentType = "image/png";
+      } else if (fileExtension === ".txt") {
+        contentType = "text/plain";
+      } else if (fileExtension === ".json") {
+        contentType = "application/json";
+      } else if (fileExtension === ".docx") {
+        contentType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+      } else if (fileExtension === ".xlsx") {
+        contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+      } else if (fileExtension === ".pptx") {
+        contentType = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+      }
+      
       res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Type", contentType);
       
       const fileStream = fs.createReadStream(job.outputFile);
       fileStream.pipe(res);
@@ -225,7 +247,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 }
 
 async function processPdfJob(jobId: string, toolType: string, inputFiles: string[]): Promise<string> {
-  // Mock PDF processing - in real app, this would use actual PDF libraries
   const outputDir = "outputs";
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
@@ -233,11 +254,311 @@ async function processPdfJob(jobId: string, toolType: string, inputFiles: string
 
   const outputFile = path.join(outputDir, `${jobId}.pdf`);
   
-  // Simulate processing time
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  try {
+    switch (toolType) {
+      case 'merge-pdf':
+        return await mergePdfs(inputFiles, outputFile);
+      
+      case 'split-pdf':
+        return await splitPdf(inputFiles[0], outputFile);
+      
+      case 'rotate-pdf':
+        return await rotatePdf(inputFiles[0], outputFile);
+      
+      case 'watermark-pdf':
+        return await watermarkPdf(inputFiles[0], outputFile);
+      
+      case 'page-numbers-pdf':
+        return await addPageNumbers(inputFiles[0], outputFile);
+      
+      case 'delete-pdf-pages':
+        return await removePages(inputFiles[0], outputFile);
+      
+      case 'pdf-to-jpg':
+      case 'pdf-to-png':
+      case 'pdf-to-tiff':
+        return await convertPdfToImages(inputFiles[0], outputFile, toolType);
+      
+      case 'png-to-pdf':
+      case 'word-to-pdf':
+        return await convertToPdf(inputFiles, outputFile, toolType);
+      
+      case 'pdf-to-word':
+      case 'pdf-to-txt':
+      case 'pdf-to-excel':
+      case 'pdf-to-json':
+      case 'pdf-to-ppt':
+        return await extractTextFromPdf(inputFiles[0], outputFile, toolType);
+      
+      case 'pdf-editor':
+        return await editPdf(inputFiles[0], outputFile);
+      
+      default:
+        throw new Error(`Unsupported tool type: ${toolType}`);
+    }
+  } catch (error) {
+    console.error(`Error processing PDF job ${jobId}:`, error);
+    throw error;
+  }
+}
+
+async function mergePdfs(inputFiles: string[], outputFile: string): Promise<string> {
+  const mergedPdf = await PDFDocument.create();
   
-  // Create a mock output file
-  fs.writeFileSync(outputFile, Buffer.from("Mock PDF content"));
+  for (const inputFile of inputFiles) {
+    const pdfBytes = fs.readFileSync(inputFile);
+    const pdf = await PDFDocument.load(pdfBytes);
+    const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+    pages.forEach(page => mergedPdf.addPage(page));
+  }
   
+  const pdfBytes = await mergedPdf.save();
+  fs.writeFileSync(outputFile, pdfBytes);
+  return outputFile;
+}
+
+async function splitPdf(inputFile: string, outputFile: string): Promise<string> {
+  const pdfBytes = fs.readFileSync(inputFile);
+  const pdf = await PDFDocument.load(pdfBytes);
+  const pageCount = pdf.getPageCount();
+  
+  // For simplicity, split into individual pages
+  const outputDir = path.dirname(outputFile);
+  const baseName = path.basename(outputFile, '.pdf');
+  const zipFiles: string[] = [];
+  
+  for (let i = 0; i < pageCount; i++) {
+    const newPdf = await PDFDocument.create();
+    const [page] = await newPdf.copyPages(pdf, [i]);
+    newPdf.addPage(page);
+    
+    const pageOutputFile = path.join(outputDir, `${baseName}_page_${i + 1}.pdf`);
+    const pageBytes = await newPdf.save();
+    fs.writeFileSync(pageOutputFile, pageBytes);
+    zipFiles.push(pageOutputFile);
+  }
+  
+  // Return the first page as the main output (in real app, would create a zip)
+  return zipFiles[0];
+}
+
+async function rotatePdf(inputFile: string, outputFile: string): Promise<string> {
+  const pdfBytes = fs.readFileSync(inputFile);
+  const pdf = await PDFDocument.load(pdfBytes);
+  
+  const pages = pdf.getPages();
+  pages.forEach(page => {
+    page.setRotation({ angle: 90 }); // Rotate 90 degrees clockwise
+  });
+  
+  const rotatedBytes = await pdf.save();
+  fs.writeFileSync(outputFile, rotatedBytes);
+  return outputFile;
+}
+
+async function watermarkPdf(inputFile: string, outputFile: string): Promise<string> {
+  const pdfBytes = fs.readFileSync(inputFile);
+  const pdf = await PDFDocument.load(pdfBytes);
+  const helveticaFont = await pdf.embedFont(StandardFonts.Helvetica);
+  
+  const pages = pdf.getPages();
+  pages.forEach(page => {
+    const { width, height } = page.getSize();
+    page.drawText('CONFIDENTIAL', {
+      x: width / 2 - 50,
+      y: height / 2,
+      size: 20,
+      font: helveticaFont,
+      color: rgb(0.5, 0.5, 0.5),
+      opacity: 0.3,
+    });
+  });
+  
+  const watermarkedBytes = await pdf.save();
+  fs.writeFileSync(outputFile, watermarkedBytes);
+  return outputFile;
+}
+
+async function addPageNumbers(inputFile: string, outputFile: string): Promise<string> {
+  const pdfBytes = fs.readFileSync(inputFile);
+  const pdf = await PDFDocument.load(pdfBytes);
+  const helveticaFont = await pdf.embedFont(StandardFonts.Helvetica);
+  
+  const pages = pdf.getPages();
+  pages.forEach((page, index) => {
+    const { width, height } = page.getSize();
+    page.drawText(`${index + 1}`, {
+      x: width / 2,
+      y: 30,
+      size: 12,
+      font: helveticaFont,
+      color: rgb(0, 0, 0),
+    });
+  });
+  
+  const numberedBytes = await pdf.save();
+  fs.writeFileSync(outputFile, numberedBytes);
+  return outputFile;
+}
+
+async function removePages(inputFile: string, outputFile: string): Promise<string> {
+  const pdfBytes = fs.readFileSync(inputFile);
+  const pdf = await PDFDocument.load(pdfBytes);
+  const pageCount = pdf.getPageCount();
+  
+  // Remove the first page as example (in real app, would accept page numbers)
+  if (pageCount > 1) {
+    pdf.removePage(0);
+  }
+  
+  const modifiedBytes = await pdf.save();
+  fs.writeFileSync(outputFile, modifiedBytes);
+  return outputFile;
+}
+
+async function convertPdfToImages(inputFile: string, outputFile: string, toolType: string): Promise<string> {
+  const pdfBytes = fs.readFileSync(inputFile);
+  const pdf = await PDFDocument.load(pdfBytes);
+  const pages = pdf.getPages();
+  
+  // Create a simple placeholder image using Sharp
+  const format = toolType === 'pdf-to-jpg' ? 'jpeg' : 'png';
+  const width = 612;
+  const height = 792;
+  
+  // Create a white background image with text
+  const svgImage = `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100%" height="100%" fill="white"/>
+    <text x="50" y="100" font-family="Arial" font-size="20" fill="black">PDF Page Content</text>
+    <text x="50" y="140" font-family="Arial" font-size="16" fill="gray">Converted from PDF (${pages.length} pages)</text>
+  </svg>`;
+  
+  const imageBuffer = await sharp(Buffer.from(svgImage))
+    .png()
+    .toBuffer();
+  
+  const imageOutputFile = outputFile.replace('.pdf', `.${format === 'jpeg' ? 'jpg' : 'png'}`);
+  
+  if (format === 'jpeg') {
+    const jpegBuffer = await sharp(imageBuffer).jpeg().toBuffer();
+    fs.writeFileSync(imageOutputFile, jpegBuffer);
+  } else {
+    fs.writeFileSync(imageOutputFile, imageBuffer);
+  }
+  
+  return imageOutputFile;
+}
+
+async function convertToPdf(inputFiles: string[], outputFile: string, toolType: string): Promise<string> {
+  const pdf = await PDFDocument.create();
+  
+  for (const inputFile of inputFiles) {
+    try {
+      if (toolType === 'png-to-pdf') {
+        const imageBytes = fs.readFileSync(inputFile);
+        const image = await pdf.embedPng(imageBytes);
+        const page = pdf.addPage([image.width, image.height]);
+        page.drawImage(image, {
+          x: 0,
+          y: 0,
+          width: image.width,
+          height: image.height,
+        });
+      } else {
+        // For word-to-pdf and other formats, create a simple text page
+        const page = pdf.addPage();
+        const helveticaFont = await pdf.embedFont(StandardFonts.Helvetica);
+        page.drawText('Converted Document Content', {
+          x: 50,
+          y: 750,
+          size: 20,
+          font: helveticaFont,
+          color: rgb(0, 0, 0),
+        });
+        page.drawText(`Source: ${path.basename(inputFile)}`, {
+          x: 50,
+          y: 720,
+          size: 12,
+          font: helveticaFont,
+          color: rgb(0.3, 0.3, 0.3),
+        });
+      }
+    } catch (error) {
+      console.error(`Error processing file ${inputFile}:`, error);
+      // Create a page with error message
+      const page = pdf.addPage();
+      const helveticaFont = await pdf.embedFont(StandardFonts.Helvetica);
+      page.drawText(`Error processing file: ${path.basename(inputFile)}`, {
+        x: 50,
+        y: 750,
+        size: 16,
+        font: helveticaFont,
+        color: rgb(1, 0, 0),
+      });
+    }
+  }
+  
+  const pdfBytes = await pdf.save();
+  fs.writeFileSync(outputFile, pdfBytes);
+  return outputFile;
+}
+
+async function extractTextFromPdf(inputFile: string, outputFile: string, toolType: string): Promise<string> {
+  const pdfBytes = fs.readFileSync(inputFile);
+  const pdf = await PDFDocument.load(pdfBytes);
+  
+  // For simplicity, create a text file with placeholder content
+  // In a real implementation, you'd use a library like pdf-parse or similar
+  const extractedText = "Extracted text content from PDF";
+  
+  let finalOutput = outputFile;
+  switch (toolType) {
+    case 'pdf-to-txt':
+      finalOutput = outputFile.replace('.pdf', '.txt');
+      fs.writeFileSync(finalOutput, extractedText);
+      break;
+    case 'pdf-to-word':
+      finalOutput = outputFile.replace('.pdf', '.docx');
+      fs.writeFileSync(finalOutput, extractedText);
+      break;
+    case 'pdf-to-excel':
+      finalOutput = outputFile.replace('.pdf', '.xlsx');
+      fs.writeFileSync(finalOutput, extractedText);
+      break;
+    case 'pdf-to-json':
+      finalOutput = outputFile.replace('.pdf', '.json');
+      const jsonContent = JSON.stringify({ text: extractedText, pages: 1 }, null, 2);
+      fs.writeFileSync(finalOutput, jsonContent);
+      break;
+    case 'pdf-to-ppt':
+      finalOutput = outputFile.replace('.pdf', '.pptx');
+      fs.writeFileSync(finalOutput, extractedText);
+      break;
+    default:
+      fs.writeFileSync(finalOutput, extractedText);
+  }
+  
+  return finalOutput;
+}
+
+async function editPdf(inputFile: string, outputFile: string): Promise<string> {
+  const pdfBytes = fs.readFileSync(inputFile);
+  const pdf = await PDFDocument.load(pdfBytes);
+  const helveticaFont = await pdf.embedFont(StandardFonts.Helvetica);
+  
+  const pages = pdf.getPages();
+  if (pages.length > 0) {
+    const firstPage = pages[0];
+    firstPage.drawText('EDITED', {
+      x: 50,
+      y: 50,
+      size: 12,
+      font: helveticaFont,
+      color: rgb(1, 0, 0),
+    });
+  }
+  
+  const editedBytes = await pdf.save();
+  fs.writeFileSync(outputFile, editedBytes);
   return outputFile;
 }
