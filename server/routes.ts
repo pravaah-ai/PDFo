@@ -29,6 +29,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { toolType } = req.body;
       const files = req.files as Express.Multer.File[];
       
+      console.log(`Processing PDF job - Tool: ${toolType}, Files: ${files?.length}`);
+      
       if (!files || files.length === 0) {
         return res.status(400).json({ error: "No files provided" });
       }
@@ -52,12 +54,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedJob = insertPdfJobSchema.parse(jobData);
       const job = await storage.createPdfJob(validatedJob);
 
-      // Simulate processing (in real app, this would be queued)
-      setTimeout(async () => {
+      // Process immediately for merge-pdf (sync processing)
+      if (toolType === 'merge-pdf') {
         try {
+          console.log(`Starting merge PDF process for job ${jobId}`);
+          await storage.updatePdfJobStatus(job.jobId, "processing");
           const outputFile = await processPdfJob(job.jobId, toolType, inputFiles);
           await storage.updatePdfJobStatus(job.jobId, "completed", outputFile);
+          console.log(`Merge PDF completed for job ${jobId}`);
         } catch (error) {
+          console.error(`Merge PDF failed for job ${jobId}:`, error);
           await storage.updatePdfJobStatus(
             job.jobId,
             "failed",
@@ -65,7 +71,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
             error instanceof Error ? error.message : "Processing failed"
           );
         }
-      }, 3000);
+      } else {
+        // Async processing for other tools
+        setTimeout(async () => {
+          try {
+            await storage.updatePdfJobStatus(job.jobId, "processing");
+            const outputFile = await processPdfJob(job.jobId, toolType, inputFiles);
+            await storage.updatePdfJobStatus(job.jobId, "completed", outputFile);
+          } catch (error) {
+            await storage.updatePdfJobStatus(
+              job.jobId,
+              "failed",
+              undefined,
+              error instanceof Error ? error.message : "Processing failed"
+            );
+          }
+        }, 2000);
+      }
 
       res.json({
         jobId: job.jobId,
@@ -325,17 +347,30 @@ async function processPdfJob(jobId: string, toolType: string, inputFiles: string
 }
 
 async function mergePdfs(inputFiles: string[], outputFile: string): Promise<string> {
+  console.log(`Merging ${inputFiles.length} PDF files into ${outputFile}`);
+  
   const mergedPdf = await PDFDocument.create();
   
   for (const inputFile of inputFiles) {
-    const pdfBytes = fs.readFileSync(inputFile);
-    const pdf = await PDFDocument.load(pdfBytes);
-    const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-    pages.forEach(page => mergedPdf.addPage(page));
+    try {
+      console.log(`Processing file: ${inputFile}`);
+      const pdfBytes = fs.readFileSync(inputFile);
+      const pdf = await PDFDocument.load(pdfBytes);
+      const pageCount = pdf.getPageCount();
+      console.log(`File ${inputFile} has ${pageCount} pages`);
+      
+      const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+      pages.forEach(page => mergedPdf.addPage(page));
+    } catch (error) {
+      console.error(`Error processing file ${inputFile}:`, error);
+      throw new Error(`Failed to process file ${path.basename(inputFile)}: ${error.message}`);
+    }
   }
   
   const pdfBytes = await mergedPdf.save();
   fs.writeFileSync(outputFile, pdfBytes);
+  
+  console.log(`Merge completed. Output file: ${outputFile}`);
   return outputFile;
 }
 
