@@ -8,6 +8,8 @@ import { BatchProcessing } from "@/components/batch-processing";
 import { DonateButton } from "@/components/donate-button";
 import { AdSenseAd } from "@/components/adsense-ad";
 import { PrivacyNotice } from "@/components/privacy-notice";
+import { SEOHead, generateToolStructuredData, generateBreadcrumbStructuredData, generateFAQStructuredData } from "@/components/SEOHead";
+import { toolsData } from "@/lib/seo-data";
 import { SplitOptions } from "@/components/split-options";
 import { MergeOptions } from "@/components/merge-options";
 import { ReorderOptions } from "@/components/reorder-options";
@@ -124,16 +126,24 @@ export default function ToolPage({ toolType }: ToolPageProps) {
   const { toast } = useToast();
   const toolConfig = getToolConfig(toolType);
 
+  // Get SEO data for this tool
+  const seoData = toolsData[toolType];
+  const toolStructuredData = seoData ? generateToolStructuredData(seoData) : null;
+  const breadcrumbStructuredData = seoData ? generateBreadcrumbStructuredData(seoData) : null;
+  const faqStructuredData = seoData ? generateFAQStructuredData(seoData.title) : null;
+
+  // Combine structured data
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      ...(toolStructuredData ? [toolStructuredData] : []),
+      ...(breadcrumbStructuredData ? [breadcrumbStructuredData] : []),
+      ...(faqStructuredData ? [faqStructuredData] : [])
+    ]
+  };
+
   useEffect(() => {
     if (toolConfig) {
-      // Update meta tags for SEO
-      document.title = toolConfig.metaTitle;
-      
-      const metaDescription = document.querySelector('meta[name="description"]');
-      if (metaDescription) {
-        metaDescription.setAttribute('content', toolConfig.metaDescription);
-      }
-
       // Track page view
       trackPageView(toolConfig.path);
     }
@@ -343,6 +353,9 @@ export default function ToolPage({ toolType }: ToolPageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {seoData && (
+        <SEOHead data={seoData} structuredData={structuredData} />
+      )}
       <Header />
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

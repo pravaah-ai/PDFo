@@ -3,7 +3,8 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { HeroSection } from "@/components/hero-section";
 import { ToolsGrid } from "@/components/tools-grid";
-
+import { SEOHead, websiteStructuredData } from "@/components/SEOHead";
+import { pagesData } from "@/lib/seo-data";
 import { trackPageView } from "@/lib/analytics";
 
 export default function Home() {
@@ -24,6 +25,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
+      <SEOHead data={pagesData.home} structuredData={websiteStructuredData} />
       <Header />
       <main>
         <HeroSection />

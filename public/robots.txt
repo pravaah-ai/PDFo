@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+Disallow: /pdfo_pravaah_aite/
+Disallow: /uploads/
+Disallow: /outputs/
+
+# Sitemap
+Sitemap: https://pdfo.replit.app/sitemap.xml
+
+# Crawl delay
+Crawl-delay: 1
+
+# Specific bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /

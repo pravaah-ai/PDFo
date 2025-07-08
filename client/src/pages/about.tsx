@@ -1,11 +1,14 @@
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { SEOHead } from "@/components/SEOHead";
+import { pagesData } from "@/lib/seo-data";
 import { Users, Target, Shield, Zap, Globe, Heart } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function About() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <SEOHead data={pagesData.about} />
       <Header />
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

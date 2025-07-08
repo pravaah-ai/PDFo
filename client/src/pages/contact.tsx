@@ -1,5 +1,7 @@
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { SEOHead } from "@/components/SEOHead";
+import { pagesData } from "@/lib/seo-data";
 import { Mail, MessageSquare, HelpCircle, Bug, Lightbulb, Heart } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +9,7 @@ import { Button } from "@/components/ui/button";
 export default function Contact() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <SEOHead data={pagesData.contact} />
       <Header />
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
