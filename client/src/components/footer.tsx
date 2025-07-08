@@ -23,9 +23,9 @@ export function Footer() {
     <footer className="bg-slate-900 text-white py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Logo and Description */}
-        <div className="mb-8">
+        <div className="mb-6">
           <Link href="/">
-            <div className="mb-4 cursor-pointer">
+            <div className="mb-3 cursor-pointer">
               <img src={logoPng} alt="PDFo Logo" className="h-12 w-auto" />
             </div>
           </Link>
@@ -35,7 +35,7 @@ export function Footer() {
         </div>
 
         {/* Social Media Icons */}
-        <div className="flex justify-start space-x-4 mb-8">
+        <div className="flex justify-start space-x-4 mb-6">
           <a href="#" className="text-slate-400 hover:text-white transition-colors">
             <Twitter className="h-6 w-6" />
           </a>
