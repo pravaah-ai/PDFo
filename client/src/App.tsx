@@ -35,6 +35,10 @@ function Router() {
       <Route path="/word-to-pdf" component={() => <ToolPage toolType="word-to-pdf" />} />
       <Route path="/lock-pdf" component={() => <ToolPage toolType="lock-pdf" />} />
       <Route path="/unlock-pdf" component={() => <ToolPage toolType="unlock-pdf" />} />
+      <Route path="/compress-pdf" component={() => <ToolPage toolType="compress-pdf" />} />
+      <Route path="/reorder-pages" component={() => <ToolPage toolType="reorder-pages" />} />
+      <Route path="/edit-metadata" component={() => <ToolPage toolType="edit-metadata" />} />
+      <Route path="/excel-to-pdf" component={() => <ToolPage toolType="excel-to-pdf" />} />
       <Route component={NotFound} />
     </Switch>
   );
