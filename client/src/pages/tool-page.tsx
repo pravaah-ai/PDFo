@@ -175,8 +175,8 @@ export default function ToolPage({ toolType }: ToolPageProps) {
       }));
     }
     
-    // For reorder-pages and delete-pages, extract page count from the first PDF
-    if ((toolType === "reorder-pages" || toolType === "delete-pages") && selectedFiles.length > 0) {
+    // For reorder-pages, delete-pages, and rotate-pdf, extract page count from the first PDF
+    if ((toolType === "reorder-pages" || toolType === "delete-pages" || toolType === "rotate-pdf") && selectedFiles.length > 0) {
       try {
         const pageCount = await extractPageCount(selectedFiles[0]);
         setPdfPageCount(pageCount);
@@ -189,6 +189,13 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           setDeleteOptions({
             pagesToDelete: "",
             parsedPages: []
+          });
+        } else if (toolType === "rotate-pdf") {
+          setRotateOptions({
+            rotationAngle: 90,
+            pagesToRotate: "",
+            parsedPages: [],
+            rotateAll: true
           });
         }
       } catch (error) {
@@ -203,6 +210,13 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           setDeleteOptions({
             pagesToDelete: "",
             parsedPages: []
+          });
+        } else if (toolType === "rotate-pdf") {
+          setRotateOptions({
+            rotationAngle: 90,
+            pagesToRotate: "",
+            parsedPages: [],
+            rotateAll: true
           });
         }
       }
@@ -260,6 +274,8 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           options = reorderOptions;
         } else if (toolType === 'delete-pages') {
           options = deleteOptions;
+        } else if (toolType === 'rotate-pdf') {
+          options = rotateOptions;
         }
         const jobResponse = await createPdfJob(toolType, files, options);
         setJobId(jobResponse.jobId);
@@ -497,7 +513,7 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           <div className="mt-6">
             <RotateOptions
               options={rotateOptions}
-              totalPages={10} // This would be dynamically set based on PDF analysis
+              totalPages={pdfPageCount || 10}
               onOptionsChange={setRotateOptions}
             />
           </div>

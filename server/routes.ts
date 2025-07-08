@@ -308,6 +308,12 @@ Allow: /`);
               } catch (e) {
                 console.error("Invalid delete options:", e);
               }
+            } else if (req.body.rotateOptions) {
+              try {
+                parsedOptions = JSON.parse(req.body.rotateOptions);
+              } catch (e) {
+                console.error("Invalid rotate options:", e);
+              }
             }
             const outputFile = await processPdfJob(job.jobId, toolType, inputFiles, parsedOptions);
             await storage.updatePdfJobStatus(job.jobId, "completed", outputFile);
@@ -530,7 +536,7 @@ async function processPdfJob(jobId: string, toolType: string, inputFiles: string
         return await splitPdf(inputFiles[0], outputFile, splitOptions);
       
       case 'rotate-pdf':
-        return await rotatePdf(inputFiles[0], outputFile);
+        return await rotatePdf(inputFiles[0], outputFile, options);
       
       case 'watermark-pdf':
         return await watermarkPdf(inputFiles[0], outputFile);
@@ -699,14 +705,40 @@ async function splitPdf(inputFile: string, outputFile: string, splitOptions?: an
   return zipFiles[0];
 }
 
-async function rotatePdf(inputFile: string, outputFile: string): Promise<string> {
+async function rotatePdf(inputFile: string, outputFile: string, rotateOptions?: any): Promise<string> {
   const pdfBytes = fs.readFileSync(inputFile);
   const pdf = await PDFDocument.load(pdfBytes);
   
+  // Get rotation settings from options
+  let rotationAngle = 90; // Default rotation
+  let pagesToRotate: number[] = [];
+  let rotateAll = true;
+  
+  if (rotateOptions) {
+    rotationAngle = rotateOptions.rotationAngle || 90;
+    rotateAll = rotateOptions.rotateAll !== false;
+    if (!rotateAll && rotateOptions.parsedPages && Array.isArray(rotateOptions.parsedPages)) {
+      pagesToRotate = rotateOptions.parsedPages;
+    }
+  }
+  
   const pages = pdf.getPages();
-  pages.forEach(page => {
-    page.setRotation({ angle: 90 }); // Rotate 90 degrees clockwise
-  });
+  
+  if (rotateAll) {
+    // Rotate all pages
+    pages.forEach(page => {
+      page.setRotation(degrees(rotationAngle));
+    });
+  } else {
+    // Rotate only specified pages
+    const pageIndicesToRotate = pagesToRotate
+      .map(pageNum => pageNum - 1)
+      .filter(index => index >= 0 && index < pages.length);
+    
+    pageIndicesToRotate.forEach(pageIndex => {
+      pages[pageIndex].setRotation(degrees(rotationAngle));
+    });
+  }
   
   const rotatedBytes = await pdf.save();
   fs.writeFileSync(outputFile, rotatedBytes);
