@@ -71,6 +71,107 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create batch PDF jobs endpoint
+  app.post("/api/pdf/batch-process", upload.array("files"), async (req, res) => {
+    try {
+      const { toolType } = req.body;
+      const files = req.files as Express.Multer.File[];
+      
+      if (!files || files.length === 0) {
+        return res.status(400).json({ error: "No files provided" });
+      }
+
+      if (!toolType) {
+        return res.status(400).json({ error: "Tool type is required" });
+      }
+
+      const jobs: PdfJobResponse[] = [];
+
+      // Create a job for each file (for tools that process individual files)
+      // or create a single job for all files (for tools like merge)
+      const shouldBatchTogether = ['merge-pdf'].includes(toolType);
+
+      if (shouldBatchTogether) {
+        // Single job for all files
+        const jobId = uuidv4();
+        const inputFiles = files.map(file => file.path);
+
+        const jobData = {
+          jobId,
+          toolType,
+          status: "pending",
+          inputFiles,
+          outputFile: null,
+          errorMessage: null,
+        };
+
+        const validatedJob = insertPdfJobSchema.parse(jobData);
+        const job = await storage.createPdfJob(validatedJob);
+
+        setTimeout(async () => {
+          try {
+            const outputFile = await processPdfJob(job.jobId, toolType, inputFiles);
+            await storage.updatePdfJobStatus(job.jobId, "completed", outputFile);
+          } catch (error) {
+            await storage.updatePdfJobStatus(
+              job.jobId,
+              "failed",
+              undefined,
+              error instanceof Error ? error.message : "Processing failed"
+            );
+          }
+        }, 3000);
+
+        jobs.push({
+          jobId: job.jobId,
+          status: job.status,
+        });
+      } else {
+        // Individual job for each file
+        for (const file of files) {
+          const jobId = uuidv4();
+          const inputFiles = [file.path];
+
+          const jobData = {
+            jobId,
+            toolType,
+            status: "pending",
+            inputFiles,
+            outputFile: null,
+            errorMessage: null,
+          };
+
+          const validatedJob = insertPdfJobSchema.parse(jobData);
+          const job = await storage.createPdfJob(validatedJob);
+
+          setTimeout(async () => {
+            try {
+              const outputFile = await processPdfJob(job.jobId, toolType, inputFiles);
+              await storage.updatePdfJobStatus(job.jobId, "completed", outputFile);
+            } catch (error) {
+              await storage.updatePdfJobStatus(
+                job.jobId,
+                "failed",
+                undefined,
+                error instanceof Error ? error.message : "Processing failed"
+              );
+            }
+          }, 2000 + Math.random() * 2000); // Stagger the processing
+
+          jobs.push({
+            jobId: job.jobId,
+            status: job.status,
+          });
+        }
+      }
+
+      res.json(jobs);
+    } catch (error) {
+      console.error("Error creating batch PDF jobs:", error);
+      res.status(500).json({ error: "Failed to create batch PDF jobs" });
+    }
+  });
+
   // Get job status endpoint
   app.get("/api/pdf/job/:jobId", async (req, res) => {
     try {

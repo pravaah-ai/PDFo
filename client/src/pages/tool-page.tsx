@@ -4,10 +4,11 @@ import { ToolFooter } from "@/components/tool-footer";
 import { ToolHero } from "@/components/tool-hero";
 import { UploadSection } from "@/components/upload-section";
 import { ProcessingStates } from "@/components/processing-states";
+import { BatchProcessing } from "@/components/batch-processing";
 import { DonateButton } from "@/components/donate-button";
 import { Button } from "@/components/ui/button";
 import { getToolConfig } from "@/lib/tools-config";
-import { createPdfJob, pollJobStatus, downloadPdfFile } from "@/lib/pdf-api";
+import { createPdfJob, createBatchPdfJobs, pollJobStatus, pollBatchJobsStatus, downloadPdfFile } from "@/lib/pdf-api";
 import { trackPageView, trackEvent } from "@/lib/analytics";
 import { useToast } from "@/hooks/use-toast";
 import { WandSparkles, ArrowLeft } from "lucide-react";
@@ -17,12 +18,22 @@ interface ToolPageProps {
   toolType: string;
 }
 
+interface BatchJob {
+  jobId: string;
+  fileName: string;
+  status: "pending" | "processing" | "completed" | "failed";
+  progress: number;
+  errorMessage?: string;
+}
+
 export default function ToolPage({ toolType }: ToolPageProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [processingState, setProcessingState] = useState<"idle" | "processing" | "success" | "error">("idle");
   const [progress, setProgress] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [jobId, setJobId] = useState<string>("");
+  const [batchMode, setBatchMode] = useState(false);
+  const [batchJobs, setBatchJobs] = useState<BatchJob[]>([]);
   
   const { toast } = useToast();
   const toolConfig = getToolConfig(toolType);
@@ -45,6 +56,8 @@ export default function ToolPage({ toolType }: ToolPageProps) {
   const handleFilesSelected = (selectedFiles: File[]) => {
     setFiles(selectedFiles);
     setProcessingState("idle");
+    setBatchMode(selectedFiles.length > 1);
+    setBatchJobs([]);
   };
 
   const handleProcess = async () => {
@@ -65,36 +78,80 @@ export default function ToolPage({ toolType }: ToolPageProps) {
       // Track processing start
       trackEvent('process_start', 'pdf_tool', toolType);
       
-      const jobResponse = await createPdfJob(toolType, files);
-      setJobId(jobResponse.jobId);
-
-      // Start polling for job status
-      const stopPolling = pollJobStatus(
-        jobResponse.jobId,
-        (status) => {
-          // Update progress (simulate progress for better UX)
-          setProgress(prev => Math.min(prev + 10, 90));
-        },
-        (result) => {
-          if (result.status === 'completed') {
+      if (batchMode && files.length > 1) {
+        // Batch processing mode
+        const jobResponses = await createBatchPdfJobs(toolType, files);
+        const initialJobs: BatchJob[] = jobResponses.map((response, index) => ({
+          jobId: response.jobId,
+          fileName: files[index].name,
+          status: response.status as BatchJob["status"],
+          progress: 0,
+        }));
+        
+        setBatchJobs(initialJobs);
+        
+        // Start polling for batch job status
+        const jobIds = jobResponses.map(response => response.jobId);
+        const stopPolling = pollBatchJobsStatus(
+          jobIds,
+          (jobId, status) => {
+            setBatchJobs(prevJobs => 
+              prevJobs.map(job => 
+                job.jobId === jobId 
+                  ? { 
+                      ...job, 
+                      status: status.status as BatchJob["status"], 
+                      progress: status.status === 'completed' ? 100 : job.progress + 10,
+                      errorMessage: status.errorMessage 
+                    }
+                  : job
+              )
+            );
+          },
+          (results) => {
             setProcessingState("success");
-            setProgress(100);
-            trackEvent('process_success', 'pdf_tool', toolType);
-          } else if (result.status === 'failed') {
+            trackEvent('batch_process_success', 'pdf_tool', toolType);
+          },
+          (error) => {
             setProcessingState("error");
-            setErrorMessage(result.errorMessage || "Processing failed");
+            setErrorMessage(error.message);
+            trackEvent('batch_process_error', 'pdf_tool', toolType);
+          }
+        );
+
+        return () => stopPolling();
+      } else {
+        // Single file processing mode
+        const jobResponse = await createPdfJob(toolType, files);
+        setJobId(jobResponse.jobId);
+
+        // Start polling for job status
+        const stopPolling = pollJobStatus(
+          jobResponse.jobId,
+          (status) => {
+            // Update progress (simulate progress for better UX)
+            setProgress(prev => Math.min(prev + 10, 90));
+          },
+          (result) => {
+            if (result.status === 'completed') {
+              setProcessingState("success");
+              setProgress(100);
+              trackEvent('process_success', 'pdf_tool', toolType);
+            } else if (result.status === 'failed') {
+              setProcessingState("error");
+              setErrorMessage(result.errorMessage || "Processing failed");
+              trackEvent('process_error', 'pdf_tool', toolType);
+            }
+          },
+          (error) => {
+            setProcessingState("error");
+            setErrorMessage(error.message);
             trackEvent('process_error', 'pdf_tool', toolType);
           }
-        },
-        (error) => {
-          setProcessingState("error");
-          setErrorMessage(error.message);
-          trackEvent('process_error', 'pdf_tool', toolType);
-        }
-      );
+        );
 
-      // Cleanup polling on component unmount
-      return () => stopPolling();
+        return () => stopPolling();
+      }
     } catch (error) {
       setProcessingState("error");
       setErrorMessage(error instanceof Error ? error.message : "Processing failed");
@@ -140,6 +197,38 @@ export default function ToolPage({ toolType }: ToolPageProps) {
     setProgress(0);
     setErrorMessage("");
     setJobId("");
+    setBatchMode(false);
+    setBatchJobs([]);
+  };
+
+  const handleDownloadAll = async () => {
+    const completedJobs = batchJobs.filter(job => job.status === 'completed');
+    
+    try {
+      for (const job of completedJobs) {
+        const blob = await downloadPdfFile(job.jobId);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = job.fileName.replace(/\.[^/.]+$/, '') + '_processed.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        // Small delay between downloads
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      
+      trackEvent('download_all_success', 'pdf_tool', toolType);
+    } catch (error) {
+      toast({
+        title: "Download failed",
+        description: "Failed to download some files. Please try downloading individual files.",
+        variant: "destructive",
+      });
+      trackEvent('download_all_error', 'pdf_tool', toolType);
+    }
   };
 
   if (!toolConfig) {
@@ -182,25 +271,46 @@ export default function ToolPage({ toolType }: ToolPageProps) {
 
           {files.length > 0 && processingState === "idle" && (
             <div className="text-center mb-8">
-              <Button
-                onClick={handleProcess}
-                size="lg"
-                className="bg-pdfo-blue hover:bg-pdfo-blue-light text-white px-8 py-4 text-lg"
-              >
-                <WandSparkles className="mr-2 h-5 w-5" />
-                {toolConfig.title}
-              </Button>
+              <div className="space-y-4">
+                {batchMode && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <p className="text-blue-800 font-medium mb-2">
+                      🎯 Batch Processing Mode
+                    </p>
+                    <p className="text-blue-700 text-sm">
+                      You've selected {files.length} files. They will be processed individually and you can download each result separately.
+                    </p>
+                  </div>
+                )}
+                
+                <Button
+                  onClick={handleProcess}
+                  size="lg"
+                  className="bg-pdfo-blue hover:bg-pdfo-blue-light text-white px-8 py-4 text-lg"
+                >
+                  <WandSparkles className="mr-2 h-5 w-5" />
+                  {batchMode ? `Process ${files.length} Files` : toolConfig.title}
+                </Button>
+              </div>
             </div>
           )}
 
-          <ProcessingStates
-            state={processingState}
-            progress={progress}
-            errorMessage={errorMessage}
-            onDownload={handleDownload}
-            onRetry={handleRetry}
-            onReset={handleReset}
-          />
+          {batchMode && processingState !== "idle" ? (
+            <BatchProcessing
+              jobs={batchJobs}
+              onDownloadAll={handleDownloadAll}
+              onReset={handleReset}
+            />
+          ) : (
+            <ProcessingStates
+              state={processingState}
+              progress={progress}
+              errorMessage={errorMessage}
+              onDownload={handleDownload}
+              onRetry={handleRetry}
+              onReset={handleReset}
+            />
+          )}
 
           {/* Donate Section */}
           <div className="text-center mt-12 pt-8 border-t border-gray-200">
