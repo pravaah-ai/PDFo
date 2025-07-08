@@ -216,7 +216,7 @@ export default function About() {
               <CardContent className="p-8">
                 <div className="mb-6">
                   <img 
-                    src="/attached_assets/image_1751993053503.jpg" 
+                    src="/purvish-patel.jpg" 
                     alt="Purvish Patel - Founder of Pravaah AI Tech"
                     className="w-auto h-auto max-w-full max-h-80 mx-auto object-contain"
                   />
