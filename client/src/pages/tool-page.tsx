@@ -148,10 +148,10 @@ export default function ToolPage({ toolType }: ToolPageProps) {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <main className="py-16 bg-white">
+      <main className="pt-6 pb-16 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back to Tools Button */}
-          <div className="mb-8">
+          <div className="mb-12">
             <Link href="/">
               <Button variant="outline" className="flex items-center gap-2 hover:bg-gray-50">
                 <ArrowLeft className="h-4 w-4" />
