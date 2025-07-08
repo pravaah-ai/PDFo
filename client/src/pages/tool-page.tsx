@@ -261,9 +261,16 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           bgColor={toolConfig.bgColor}
         />
 
-        {/* Privacy Notice */}
-        <PrivacyNotice />
-        
+        {/* Back to Tools Button */}
+        <div className="mb-6">
+          <Link href="/#tools">
+            <Button variant="outline" size="sm">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Tools
+            </Button>
+          </Link>
+        </div>
+
         {/* Upload Section */}
         <div className="mt-8">
           <UploadSection
@@ -321,19 +328,24 @@ export default function ToolPage({ toolType }: ToolPageProps) {
 
 
 
+        {/* Privacy Notice */}
+        <div className="mt-12">
+          <PrivacyNotice />
+        </div>
+
         {/* Support Section */}
-        <div className="mt-12 space-y-6">
-          <div className="text-center">
-            <DonateButton variant="outline" />
-          </div>
-          
+        <div className="mt-8 space-y-4">
           <div className="text-center text-sm text-gray-600 dark:text-gray-400">
             <p>Love PDFo? <Coffee className="inline h-4 w-4 mx-1" /> Support us with a coffee!</p>
+          </div>
+          
+          <div className="text-center">
+            <DonateButton variant="outline" />
           </div>
         </div>
 
         {/* Advertisement */}
-        <div className="mt-8">
+        <div className="mt-8 mb-12">
           <AdSenseAd 
             adSlot="your-ad-slot-id"
             adFormat="rectangle"
