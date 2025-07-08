@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "wouter";
-import { getAllTools } from "@/lib/tools-config";
+import { getAllTools, getToolIcon } from "@/lib/tools-config";
 import { trackEvent } from "@/lib/analytics";
 
 export function ToolsGrid() {
@@ -26,8 +26,8 @@ export function ToolsGrid() {
                 onClick={() => handleToolClick(tool.id)}
               >
                 <CardContent className="p-6">
-                  <div className={`flex items-center justify-center w-16 h-16 rounded-xl mb-4 transition-colors ${tool.bgColor}`}>
-                    <i className={`${tool.icon} ${tool.iconColor} text-2xl`}></i>
+                  <div className={`flex items-center justify-center w-16 h-16 rounded-xl mb-4 transition-colors ${tool.bgColor} group-hover:scale-110`}>
+                    {getToolIcon(tool.id, tool.iconColor)}
                   </div>
                   <h3 className="text-lg font-semibold text-pdfo-dark-grey mb-2">
                     {tool.title}
