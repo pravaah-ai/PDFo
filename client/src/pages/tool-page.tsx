@@ -175,20 +175,36 @@ export default function ToolPage({ toolType }: ToolPageProps) {
       }));
     }
     
-    // For reorder-pages, extract page count from the first PDF
-    if (toolType === "reorder-pages" && selectedFiles.length > 0) {
+    // For reorder-pages and delete-pages, extract page count from the first PDF
+    if ((toolType === "reorder-pages" || toolType === "delete-pages") && selectedFiles.length > 0) {
       try {
         const pageCount = await extractPageCount(selectedFiles[0]);
         setPdfPageCount(pageCount);
-        setReorderOptions({
-          pageOrder: Array.from({ length: pageCount }, (_, i) => i + 1)
-        });
+        
+        if (toolType === "reorder-pages") {
+          setReorderOptions({
+            pageOrder: Array.from({ length: pageCount }, (_, i) => i + 1)
+          });
+        } else if (toolType === "delete-pages") {
+          setDeleteOptions({
+            pagesToDelete: "",
+            parsedPages: []
+          });
+        }
       } catch (error) {
         console.error('Error extracting page count:', error);
         setPdfPageCount(10); // Default fallback
-        setReorderOptions({
-          pageOrder: Array.from({ length: 10 }, (_, i) => i + 1)
-        });
+        
+        if (toolType === "reorder-pages") {
+          setReorderOptions({
+            pageOrder: Array.from({ length: 10 }, (_, i) => i + 1)
+          });
+        } else if (toolType === "delete-pages") {
+          setDeleteOptions({
+            pagesToDelete: "",
+            parsedPages: []
+          });
+        }
       }
     }
   };
@@ -242,6 +258,8 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           options = splitOptions;
         } else if (toolType === 'reorder-pages') {
           options = reorderOptions;
+        } else if (toolType === 'delete-pages') {
+          options = deleteOptions;
         }
         const jobResponse = await createPdfJob(toolType, files, options);
         setJobId(jobResponse.jobId);
@@ -469,7 +487,7 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           <div className="mt-6">
             <DeletePagesOptions
               options={deleteOptions}
-              totalPages={10} // This would be dynamically set based on PDF analysis
+              totalPages={pdfPageCount || 10}
               onOptionsChange={setDeleteOptions}
             />
           </div>

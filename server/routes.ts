@@ -237,7 +237,7 @@ Allow: /`);
   // Create PDF job endpoint
   app.post("/api/pdf/process", upload.array("files"), async (req, res) => {
     try {
-      const { toolType, splitOptions, reorderOptions } = req.body;
+      const { toolType, splitOptions, reorderOptions, deleteOptions } = req.body;
       const files = req.files as Express.Multer.File[];
       
       console.log(`Processing PDF job - Tool: ${toolType}, Files: ${files?.length}`);
@@ -301,6 +301,12 @@ Allow: /`);
                 parsedOptions = JSON.parse(reorderOptions);
               } catch (e) {
                 console.error("Invalid reorder options:", e);
+              }
+            } else if (deleteOptions) {
+              try {
+                parsedOptions = JSON.parse(deleteOptions);
+              } catch (e) {
+                console.error("Invalid delete options:", e);
               }
             }
             const outputFile = await processPdfJob(job.jobId, toolType, inputFiles, parsedOptions);
@@ -533,7 +539,7 @@ async function processPdfJob(jobId: string, toolType: string, inputFiles: string
         return await addPageNumbers(inputFiles[0], outputFile);
       
       case 'delete-pdf-pages':
-        return await removePages(inputFiles[0], outputFile);
+        return await removePages(inputFiles[0], outputFile, options);
       
       case 'lock-pdf':
         return await lockPdf(inputFiles[0], outputFile);
@@ -752,14 +758,44 @@ async function addPageNumbers(inputFile: string, outputFile: string): Promise<st
   return outputFile;
 }
 
-async function removePages(inputFile: string, outputFile: string): Promise<string> {
+async function removePages(inputFile: string, outputFile: string, deleteOptions?: any): Promise<string> {
   const pdfBytes = fs.readFileSync(inputFile);
   const pdf = await PDFDocument.load(pdfBytes);
   const pageCount = pdf.getPageCount();
   
-  // Remove the first page as example (in real app, would accept page numbers)
-  if (pageCount > 1) {
-    pdf.removePage(0);
+  // Get pages to delete from options
+  let pagesToDelete: number[] = [];
+  if (deleteOptions && deleteOptions.parsedPages && Array.isArray(deleteOptions.parsedPages)) {
+    pagesToDelete = deleteOptions.parsedPages;
+  } else {
+    // Default fallback: remove the first page
+    pagesToDelete = [1];
+  }
+  
+  // Convert to 0-based indices and filter valid page numbers
+  const indicesToDelete = pagesToDelete
+    .map(pageNum => pageNum - 1)
+    .filter(index => index >= 0 && index < pageCount)
+    .sort((a, b) => b - a); // Sort in descending order to remove from end first
+  
+  // Remove pages (from end to start to avoid index shifting issues)
+  for (const index of indicesToDelete) {
+    pdf.removePage(index);
+  }
+  
+  // Add a note about page deletion
+  const helveticaFont = await pdf.embedFont(StandardFonts.Helvetica);
+  const remainingPages = pdf.getPages();
+  if (remainingPages.length > 0) {
+    const firstPage = remainingPages[0];
+    firstPage.drawText('🗑️ PAGES DELETED', {
+      x: 20,
+      y: 20,
+      size: 8,
+      font: helveticaFont,
+      color: rgb(1, 0, 0),
+      opacity: 0.5,
+    });
   }
   
   const modifiedBytes = await pdf.save();

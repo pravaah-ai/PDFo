@@ -10,6 +10,8 @@ export async function createPdfJob(toolType: string, files: File[], options?: an
       formData.append('splitOptions', JSON.stringify(options));
     } else if (toolType === 'reorder-pages') {
       formData.append('reorderOptions', JSON.stringify(options));
+    } else if (toolType === 'delete-pages') {
+      formData.append('deleteOptions', JSON.stringify(options));
     }
   }
   
