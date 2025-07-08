@@ -1,12 +1,14 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Coffee, Menu } from "lucide-react";
+import { Coffee, Menu, User, LogIn } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "./theme-toggle";
+import { useAuth } from "@/contexts/AuthContext";
 import logoPng from "@assets/logo_1751964519607.png";
 
 export function Header() {
   const [location] = useLocation();
+  const { user, loading } = useAuth();
 
   const navigation = [
     { name: "Home", href: "/" },
@@ -79,6 +81,27 @@ export function Header() {
               ))}
             </nav>
 
+            {/* Authentication Actions */}
+            {!loading && (
+              <div className="hidden lg:flex items-center space-x-4">
+                {user ? (
+                  <Link href="/dashboard">
+                    <Button variant="outline" size="sm">
+                      <User className="h-4 w-4 mr-2" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link href="/login">
+                    <Button size="sm">
+                      <LogIn className="h-4 w-4 mr-2" />
+                      Login
+                    </Button>
+                  </Link>
+                )}
+              </div>
+            )}
+
             {/* Theme Toggle */}
             <ThemeToggle />
             
@@ -127,6 +150,41 @@ export function Header() {
                       </Link>
                     )
                   ))}
+                  
+                  {/* Mobile Authentication Links */}
+                  {!loading && (
+                    <div className="border-t pt-4 mt-4">
+                      {user ? (
+                        <div className="space-y-2">
+                          <Link href="/dashboard">
+                            <span className="block px-4 py-2 rounded-lg transition-colors cursor-pointer text-pdfo-dark-grey dark:text-gray-300 hover:text-pdfo-blue hover:bg-gray-50 dark:hover:bg-gray-800">
+                              <User className="h-4 w-4 mr-2 inline" />
+                              Dashboard
+                            </span>
+                          </Link>
+                          <Link href="/logout">
+                            <span className="block px-4 py-2 rounded-lg transition-colors cursor-pointer text-pdfo-dark-grey dark:text-gray-300 hover:text-pdfo-blue hover:bg-gray-50 dark:hover:bg-gray-800">
+                              Logout
+                            </span>
+                          </Link>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <Link href="/login">
+                            <span className="block px-4 py-2 rounded-lg transition-colors cursor-pointer text-pdfo-dark-grey dark:text-gray-300 hover:text-pdfo-blue hover:bg-gray-50 dark:hover:bg-gray-800">
+                              <LogIn className="h-4 w-4 mr-2 inline" />
+                              Login
+                            </span>
+                          </Link>
+                          <Link href="/signup">
+                            <span className="block px-4 py-2 rounded-lg transition-colors cursor-pointer text-pdfo-dark-grey dark:text-gray-300 hover:text-pdfo-blue hover:bg-gray-50 dark:hover:bg-gray-800">
+                              Sign Up
+                            </span>
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </nav>
               </SheetContent>
             </Sheet>
