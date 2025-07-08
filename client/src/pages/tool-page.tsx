@@ -150,6 +150,18 @@ export default function ToolPage({ toolType }: ToolPageProps) {
     <div className="min-h-screen bg-white">
       <Header />
       
+      {/* Back to Tools Button */}
+      <div className="bg-white py-6">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Link href="/">
+            <Button variant="outline" className="flex items-center gap-2 hover:bg-gray-50">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Tools
+            </Button>
+          </Link>
+        </div>
+      </div>
+      
       {/* Hero Section */}
       <ToolHero 
         toolId={toolConfig.id}
@@ -159,23 +171,14 @@ export default function ToolPage({ toolType }: ToolPageProps) {
         bgColor={toolConfig.bgColor}
       />
       
+      {/* Upload Section */}
+      <UploadSection
+        acceptedFileTypes={toolConfig.acceptedFiles.split(',')}
+        onFilesSelected={handleFilesSelected}
+      />
+      
       <main className="pt-6 pb-16 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Back to Tools Button */}
-          <div className="mb-12">
-            <Link href="/">
-              <Button variant="outline" className="flex items-center gap-2 hover:bg-gray-50">
-                <ArrowLeft className="h-4 w-4" />
-                Back to Tools
-              </Button>
-            </Link>
-          </div>
-
-          <UploadSection
-            acceptedFileTypes={toolConfig.acceptedFiles.split(',')}
-            onFilesSelected={handleFilesSelected}
-            className="mb-8"
-          />
 
           {files.length > 0 && processingState === "idle" && (
             <div className="text-center mb-8">
