@@ -7,6 +7,8 @@ import { ProcessingStates } from "@/components/processing-states";
 import { BatchProcessing } from "@/components/batch-processing";
 import { DonateButton } from "@/components/donate-button";
 import { AdSenseAd } from "@/components/adsense-ad";
+import { SocialShare } from "@/components/social-share";
+import { ShareSuccessModal } from "@/components/share-success-modal";
 import { Button } from "@/components/ui/button";
 import { getToolConfig } from "@/lib/tools-config";
 import { createPdfJob, createBatchPdfJobs, pollJobStatus, pollBatchJobsStatus, downloadPdfFile } from "@/lib/pdf-api";
@@ -35,6 +37,7 @@ export default function ToolPage({ toolType }: ToolPageProps) {
   const [jobId, setJobId] = useState<string>("");
   const [batchMode, setBatchMode] = useState(false);
   const [batchJobs, setBatchJobs] = useState<BatchJob[]>([]);
+  const [showShareModal, setShowShareModal] = useState(false);
   
   const { toast } = useToast();
   const toolConfig = getToolConfig(toolType);
@@ -98,6 +101,8 @@ export default function ToolPage({ toolType }: ToolPageProps) {
               setProcessingState("success");
               setProgress(100);
               trackEvent('process_success', 'pdf_tool', toolType);
+              // Show share modal after successful processing
+              setTimeout(() => setShowShareModal(true), 1000);
             } else if (result.status === 'failed') {
               setProcessingState("error");
               setErrorMessage(result.errorMessage || "Processing failed");
@@ -143,6 +148,8 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           (results) => {
             setProcessingState("success");
             trackEvent('batch_process_success', 'pdf_tool', toolType);
+            // Show share modal after successful batch processing
+            setTimeout(() => setShowShareModal(true), 1000);
           },
           (error) => {
             setProcessingState("error");
@@ -212,6 +219,7 @@ export default function ToolPage({ toolType }: ToolPageProps) {
     setJobId("");
     setBatchJobs([]);
     setFiles([]);
+    setShowShareModal(false);
   };
 
   const handleRetry = () => {
@@ -282,6 +290,8 @@ export default function ToolPage({ toolType }: ToolPageProps) {
             onDownload={handleDownload}
             onRetry={handleRetry}
             onReset={handleReset}
+            toolName={toolConfig.title}
+            fileName={files.length > 0 ? files[0].name : undefined}
           />
         </div>
         
@@ -292,6 +302,16 @@ export default function ToolPage({ toolType }: ToolPageProps) {
               jobs={batchJobs}
               onDownloadAll={handleDownloadAll}
               onReset={handleReset}
+            />
+          </div>
+        )}
+
+        {/* Social Share Section - Show after successful processing */}
+        {processingState === "success" && (
+          <div className="mt-8">
+            <SocialShare
+              toolName={toolConfig.title}
+              fileName={files.length > 0 ? files[0].name : undefined}
             />
           </div>
         )}
@@ -318,6 +338,14 @@ export default function ToolPage({ toolType }: ToolPageProps) {
       </main>
       
       <ToolFooter />
+      
+      {/* Share Success Modal */}
+      <ShareSuccessModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        toolName={toolConfig.title}
+        fileName={files.length > 0 ? files[0].name : undefined}
+      />
     </div>
   );
 }
