@@ -32,15 +32,15 @@ export default function Home() {
         <FeaturesSection />
         
         {/* Donate Section */}
-        <section className="py-16 bg-pdfo-light-grey">
+        <section className="py-20 bg-white border-t border-gray-100">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold text-pdfo-dark-grey mb-4">
-              Support PDFo
+            <h2 className="text-3xl lg:text-4xl font-bold text-pdfo-dark-grey mb-4">
+              Support Our Mission
             </h2>
-            <p className="text-xl text-gray-600 mb-8">
-              Help us keep these tools free and continuously improve them
+            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+              Help us keep these tools free and continuously improve them for everyone
             </p>
-            <DonateButton size="lg" />
+            <DonateButton size="lg" className="px-12 py-4 text-lg font-medium" />
           </div>
         </section>
       </main>

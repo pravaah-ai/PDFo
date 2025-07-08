@@ -20,52 +20,37 @@ export function Header() {
   };
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
+    <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
+        <div className="flex justify-between items-center py-6">
           <Link href="/">
             <div className="flex items-center space-x-3 cursor-pointer">
-              <img src={logoPng} alt="PDFo Logo" className="h-8 w-auto" />
-              <span className="text-2xl font-bold text-pdfo-dark-grey">PDFo</span>
+              <img src={logoPng} alt="PDFo Logo" className="h-10 w-auto" />
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
-            {navigation.map((item) => (
-              <Link key={item.name} href={item.href}>
-                <span
-                  className={`transition-colors cursor-pointer ${
-                    isActive(item.href)
-                      ? "text-pdfo-blue font-medium"
-                      : "text-pdfo-dark-grey hover:text-pdfo-blue"
-                  }`}
-                >
-                  {item.name}
-                </span>
-              </Link>
-            ))}
-          </nav>
-
-          <div className="flex items-center space-x-4">
-            <Button
-              asChild
-              className="bg-pdfo-warning hover:bg-yellow-500 text-white"
-            >
-              <a
-                href="https://buymeacoffee.com/pravaah"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Coffee className="mr-2 h-4 w-4" />
-                Donate
-              </a>
-            </Button>
+          <div className="flex items-center space-x-6">
+            {/* Desktop Navigation - Hidden for cleaner look */}
+            <nav className="hidden lg:flex space-x-8">
+              {navigation.slice(1).map((item) => (
+                <Link key={item.name} href={item.href}>
+                  <span
+                    className={`transition-colors cursor-pointer text-sm font-medium ${
+                      isActive(item.href)
+                        ? "text-pdfo-blue"
+                        : "text-gray-600 hover:text-pdfo-blue"
+                    }`}
+                  >
+                    {item.name}
+                  </span>
+                </Link>
+              ))}
+            </nav>
 
             {/* Mobile Menu */}
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
+                <Button variant="ghost" size="icon" className="lg:hidden">
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
