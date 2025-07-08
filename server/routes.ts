@@ -1037,8 +1037,18 @@ async function convertPdfToImages(inputFile: string, outputFile: string, toolTyp
     // Try to load and validate the PDF
     let pdf, pages, firstPage, width, height;
     try {
-      pdf = await PDFDocument.load(pdfBytes);
+      console.log(`Loading PDF file: ${inputFile}, size: ${pdfBytes.length} bytes`);
+      
+      // Check if file starts with PDF magic number
+      const pdfHeader = pdfBytes.slice(0, 4).toString();
+      if (!pdfHeader.startsWith('%PDF')) {
+        throw new Error('File does not appear to be a valid PDF');
+      }
+      
+      pdf = await PDFDocument.load(pdfBytes, { ignoreEncryption: true });
       pages = pdf.getPages();
+      
+      console.log(`PDF loaded successfully, page count: ${pages.length}`);
       
       if (pages.length === 0) {
         throw new Error('PDF contains no pages');
@@ -1049,12 +1059,19 @@ async function convertPdfToImages(inputFile: string, outputFile: string, toolTyp
       width = pageSize.width;
       height = pageSize.height;
       
+      console.log(`Page dimensions: ${width}x${height}`);
+      
       // Validate dimensions
       if (width <= 0 || height <= 0) {
         throw new Error('Invalid page dimensions');
       }
     } catch (pdfError) {
       console.error('PDF parsing error:', pdfError);
+      console.error('Error details:', {
+        message: pdfError.message,
+        name: pdfError.name,
+        stack: pdfError.stack?.split('\n')[0]
+      });
       throw new Error('Invalid PDF file or corrupted document');
     }
     
