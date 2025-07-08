@@ -295,20 +295,6 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           </div>
         </div>
       )}
-
-      {/* AdSense Ad Section */}
-      {files.length > 0 && (
-        <div className="bg-gray-50 py-8">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <AdSenseAd 
-              adSlot="1234567890"
-              adFormat="auto"
-              className="mb-8"
-              style={{ minHeight: "250px" }}
-            />
-          </div>
-        </div>
-      )}
       
       <main className="pt-6 pb-16 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -332,41 +318,6 @@ export default function ToolPage({ toolType }: ToolPageProps) {
 
         </div>
       </main>
-
-      {/* Donate Section - Always visible */}
-      <div className="bg-yellow-50 py-12 border-t border-yellow-200">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="bg-white rounded-lg shadow-sm p-8 max-w-md mx-auto">
-            <div className="mb-4">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-yellow-100 rounded-full mb-3">
-                <Coffee className="h-6 w-6 text-yellow-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Support PDFo
-              </h3>
-              <p className="text-gray-600 text-sm">
-                Found this tool helpful? Support us to keep it free and ad-free for everyone!
-              </p>
-            </div>
-            <DonateButton size="lg" />
-          </div>
-        </div>
-      </div>
-
-      {/* AdSense Ad Below Donate Section */}
-      <div className="bg-gray-100 py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wide">Advertisement</p>
-          </div>
-          <AdSenseAd 
-            adSlot="0987654321"
-            adFormat="auto"
-            className="bg-white rounded-lg shadow-sm"
-            style={{ minHeight: "280px", padding: "20px" }}
-          />
-        </div>
-      </div>
       
       <ToolFooter />
     </div>

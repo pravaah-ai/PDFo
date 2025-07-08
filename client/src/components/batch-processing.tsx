@@ -95,16 +95,6 @@ export function BatchProcessing({ jobs, onDownloadAll, onReset }: BatchProcessin
 
   return (
     <div className="space-y-6">
-      {/* AdSense Ad */}
-      <div className="bg-gray-50 py-6 rounded-lg">
-        <AdSenseAd 
-          adSlot="1234567890"
-          adFormat="auto"
-          className="mb-4"
-          style={{ minHeight: "200px" }}
-        />
-      </div>
-      
       {/* Overall Progress */}
       <Card>
         <CardHeader>

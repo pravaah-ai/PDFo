@@ -32,21 +32,6 @@ export default function Home() {
         <ToolsGrid />
         <FeaturesSection />
         
-        {/* AdSense Ad Section */}
-        <div className="bg-gray-50 py-12">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-6">
-              <p className="text-xs text-gray-500 uppercase tracking-wide">Advertisement</p>
-            </div>
-            <AdSenseAd 
-              adSlot="1111111111"
-              adFormat="auto"
-              className="bg-white rounded-lg shadow-sm"
-              style={{ minHeight: "300px", padding: "20px" }}
-            />
-          </div>
-        </div>
-        
         {/* Donate Section */}
         <div className="bg-yellow-50 py-12">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -58,6 +43,19 @@ export default function Home() {
                 Keep PDFo free and ad-free for everyone!
               </p>
               <DonateButton size="lg" />
+            </div>
+            
+            {/* AdSense Ad Below Buy Me Coffee Button */}
+            <div className="mt-12">
+              <div className="text-center mb-4">
+                <p className="text-xs text-gray-500 uppercase tracking-wide">Advertisement</p>
+              </div>
+              <AdSenseAd 
+                adSlot="1111111111"
+                adFormat="auto"
+                className="bg-white rounded-lg shadow-sm"
+                style={{ minHeight: "280px", padding: "20px" }}
+              />
             </div>
           </div>
         </div>
