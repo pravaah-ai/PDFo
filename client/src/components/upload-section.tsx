@@ -14,7 +14,7 @@ export function UploadSection({ acceptedFileTypes, onFilesSelected, className }:
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Upload Section Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-blue-600 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-blue-500 mb-4">
             <Upload className="w-8 h-8 text-white" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
@@ -26,7 +26,7 @@ export function UploadSection({ acceptedFileTypes, onFilesSelected, className }:
         </div>
 
         {/* File Upload Component */}
-        <Card className="border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors bg-white">
+        <Card className="border-2 border-dashed border-gray-300 hover:border-blue-400 transition-colors bg-white rounded-xl">
           <CardContent className="p-8">
             <FileUpload
               acceptedFileTypes={acceptedFileTypes}
