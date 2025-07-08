@@ -1,51 +1,48 @@
 import { Link } from "wouter";
-import logoPng from "@assets/logo_1751964519607.png";
+import { Twitter, Linkedin } from "lucide-react";
 
 export function Footer() {
   const pdfTools = [
     { name: "Merge PDF", href: "/merge-pdf" },
     { name: "Split PDF", href: "/split-pdf" },
-    { name: "Rotate PDF", href: "/rotate-pdf" },
-    { name: "Watermark PDF", href: "/watermark-pdf" },
+    { name: "Convert PDF", href: "/pdf-to-word" },
+    { name: "Edit PDF", href: "/rotate-pdf" },
+    { name: "Compress PDF", href: "/compress-pdf" },
   ];
 
-  const converters = [
-    { name: "PDF to Word", href: "/pdf-to-word" },
-    { name: "PDF to Excel", href: "/pdf-to-excel" },
-    { name: "PDF to JPG", href: "/pdf-to-jpg" },
-    { name: "Word to PDF", href: "/word-to-pdf" },
-  ];
-
-  const support = [
-    { name: "Help Center", href: "/help" },
-    { name: "Contact Us", href: "/contact" },
+  const company = [
+    { name: "About Us", href: "/about" },
     { name: "Privacy Policy", href: "/privacy" },
     { name: "Terms of Service", href: "/terms" },
+    { name: "Contact", href: "/contact" },
+    { name: "Support Us", href: "https://buymeacoffee.com/pravaah" },
   ];
 
   return (
-    <footer className="bg-pdfo-dark-grey text-white py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <Link href="/">
-              <div className="flex items-center space-x-3 mb-4 cursor-pointer">
-                <img src={logoPng} alt="PDFo Logo" className="h-8 w-auto" />
-                <span className="text-xl font-bold">PDFo</span>
-              </div>
-            </Link>
-            <p className="text-gray-400">
-              Your complete PDF toolkit for all your document needs.
-            </p>
-          </div>
+    <footer className="bg-slate-900 text-white py-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Social Media Icons */}
+        <div className="flex justify-start space-x-4 mb-12">
+          <a href="#" className="text-slate-400 hover:text-white transition-colors">
+            <Twitter className="h-6 w-6" />
+          </a>
+          <a href="#" className="text-slate-400 hover:text-white transition-colors">
+            <Twitter className="h-6 w-6" />
+          </a>
+          <a href="#" className="text-slate-400 hover:text-white transition-colors">
+            <Linkedin className="h-6 w-6" />
+          </a>
+        </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          {/* PDF Tools Section */}
           <div>
-            <h4 className="font-semibold mb-4">PDF Tools</h4>
-            <ul className="space-y-2 text-gray-400">
+            <h3 className="text-xl font-bold mb-8 text-white">PDF Tools</h3>
+            <ul className="space-y-4 text-slate-400">
               {pdfTools.map((tool) => (
                 <li key={tool.name}>
                   <Link href={tool.href}>
-                    <span className="hover:text-white transition-colors cursor-pointer">
+                    <span className="hover:text-white transition-colors cursor-pointer text-base">
                       {tool.name}
                     </span>
                   </Link>
@@ -54,39 +51,41 @@ export function Footer() {
             </ul>
           </div>
 
+          {/* Company Section */}
           <div>
-            <h4 className="font-semibold mb-4">Converters</h4>
-            <ul className="space-y-2 text-gray-400">
-              {converters.map((converter) => (
-                <li key={converter.name}>
-                  <Link href={converter.href}>
-                    <span className="hover:text-white transition-colors cursor-pointer">
-                      {converter.name}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-semibold mb-4">Support</h4>
-            <ul className="space-y-2 text-gray-400">
-              {support.map((item) => (
+            <h3 className="text-xl font-bold mb-8 text-white">Company</h3>
+            <ul className="space-y-4 text-slate-400">
+              {company.map((item) => (
                 <li key={item.name}>
-                  <Link href={item.href}>
-                    <span className="hover:text-white transition-colors cursor-pointer">
+                  {item.href.startsWith('http') ? (
+                    <a 
+                      href={item.href} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="hover:text-white transition-colors text-base"
+                    >
                       {item.name}
-                    </span>
-                  </Link>
+                    </a>
+                  ) : (
+                    <Link href={item.href}>
+                      <span className="hover:text-white transition-colors cursor-pointer text-base">
+                        {item.name}
+                      </span>
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 PDFo. All rights reserved.</p>
+        <div className="border-t border-slate-700 mt-12 pt-8 text-center">
+          <p className="text-slate-400 text-sm mb-4">
+            &copy; 2025 Pravaah INC. All rights reserved.
+          </p>
+          <p className="text-slate-400 text-sm">
+            Made with <span className="text-red-400">❤️</span> for better PDF workflows
+          </p>
         </div>
       </div>
     </footer>
