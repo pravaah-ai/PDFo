@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Twitter, Linkedin } from "lucide-react";
+import { Twitter, Linkedin, Facebook } from "lucide-react";
 import logoPng from "@assets/logo_1751964519607.png";
 
 export function Footer() {
@@ -37,13 +37,13 @@ export function Footer() {
         {/* Social Media Icons */}
         <div className="flex justify-start space-x-4 mb-6">
           <a href="#" className="text-slate-400 hover:text-white transition-colors">
-            <Twitter className="h-6 w-6" />
-          </a>
-          <a href="#" className="text-slate-400 hover:text-white transition-colors">
-            <Twitter className="h-6 w-6" />
+            <Facebook className="h-6 w-6" />
           </a>
           <a href="#" className="text-slate-400 hover:text-white transition-colors">
             <Linkedin className="h-6 w-6" />
+          </a>
+          <a href="#" className="text-slate-400 hover:text-white transition-colors">
+            <Twitter className="h-6 w-6" />
           </a>
         </div>
 
