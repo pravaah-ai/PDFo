@@ -30,6 +30,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const files = req.files as Express.Multer.File[];
       
       console.log(`Processing PDF job - Tool: ${toolType}, Files: ${files?.length}`);
+      console.log('Request body keys:', Object.keys(req.body));
+      console.log('Files received:', files?.map(f => ({ name: f.originalname, size: f.size })));
       
       if (!files || files.length === 0) {
         return res.status(400).json({ error: "No files provided" });
