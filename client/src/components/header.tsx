@@ -29,14 +29,62 @@ export function Header() {
         <div className="flex justify-between items-center py-6">
           <Link href="/">
             <div className="flex items-center space-x-3 cursor-pointer">
-              <img 
-                src={logoPng} 
-                alt="PDFo Logo" 
+              <svg 
+                width="120" 
+                height="40" 
+                viewBox="0 0 120 40" 
                 className="h-10 w-auto"
-                loading="eager"
-                decoding="sync"
-                fetchpriority="high"
-              />
+                aria-label="PDFo Logo"
+              >
+                <defs>
+                  <linearGradient id="pdfBlue" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style={{ stopColor: '#0066cc', stopOpacity: 1 }} />
+                    <stop offset="100%" style={{ stopColor: '#0052a3', stopOpacity: 1 }} />
+                  </linearGradient>
+                </defs>
+                
+                {/* Lightning bolt icon */}
+                <path
+                  d="M8 8 L20 8 L20 16 L28 16 L16 32 L16 20 L8 20 Z"
+                  fill="url(#pdfBlue)"
+                  stroke="white"
+                  strokeWidth="1"
+                />
+                
+                {/* P letter */}
+                <path
+                  d="M32 8 L32 32 L36 32 L36 22 L44 22 C48 22 50 20 50 16 C50 12 48 8 44 8 L32 8 Z M36 12 L44 12 C46 12 46 14 46 16 C46 18 46 18 44 18 L36 18 Z"
+                  fill="url(#pdfBlue)"
+                />
+                
+                {/* D letter */}
+                <path
+                  d="M54 8 L54 32 L62 32 C68 32 72 28 72 20 C72 12 68 8 62 8 L54 8 Z M58 12 L62 12 C66 12 68 14 68 20 C68 26 66 28 62 28 L58 28 Z"
+                  fill="url(#pdfBlue)"
+                />
+                
+                {/* F letter */}
+                <path
+                  d="M76 8 L76 32 L80 32 L80 22 L88 22 L88 18 L80 18 L80 12 L90 12 L90 8 L76 8 Z"
+                  fill="url(#pdfBlue)"
+                />
+                
+                {/* o letter */}
+                <circle
+                  cx="100"
+                  cy="20"
+                  r="8"
+                  fill="#333333"
+                  stroke="white"
+                  strokeWidth="1"
+                />
+                <circle
+                  cx="100"
+                  cy="20"
+                  r="4"
+                  fill="white"
+                />
+              </svg>
             </div>
           </Link>
 
