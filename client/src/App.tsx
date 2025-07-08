@@ -23,6 +23,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/merge-pdf" component={() => <ToolPage toolType="merge-pdf" />} />
       <Route path="/split-pdf" component={() => <ToolPage toolType="split-pdf" />} />
+      <Route path="/tool/split-pdf" component={() => <ToolPage toolType="split-pdf" />} />
       <Route path="/delete-pdf-pages" component={() => <ToolPage toolType="delete-pdf-pages" />} />
       <Route path="/rotate-pdf" component={() => <ToolPage toolType="rotate-pdf" />} />
       <Route path="/watermark-pdf" component={() => <ToolPage toolType="watermark-pdf" />} />

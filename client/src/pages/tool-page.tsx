@@ -8,6 +8,7 @@ import { BatchProcessing } from "@/components/batch-processing";
 import { DonateButton } from "@/components/donate-button";
 import { AdSenseAd } from "@/components/adsense-ad";
 import { PrivacyNotice } from "@/components/privacy-notice";
+import { SplitOptions } from "@/components/split-options";
 
 import { Button } from "@/components/ui/button";
 import { getToolConfig } from "@/lib/tools-config";
@@ -37,6 +38,11 @@ export default function ToolPage({ toolType }: ToolPageProps) {
   const [jobId, setJobId] = useState<string>("");
   const [batchMode, setBatchMode] = useState(false);
   const [batchJobs, setBatchJobs] = useState<BatchJob[]>([]);
+  const [splitOptions, setSplitOptions] = useState({
+    splitType: "all", // "all", "range", "specific"
+    pageRange: { start: 1, end: 1 },
+    specificPages: ""
+  });
 
   
   const { toast } = useToast();
@@ -85,7 +91,7 @@ export default function ToolPage({ toolType }: ToolPageProps) {
       // For merge-pdf, always use single job mode even with multiple files
       if (toolType === 'merge-pdf' || (!batchMode || files.length === 1)) {
         // Single job processing (merge-pdf combines all files into one job)
-        const jobResponse = await createPdfJob(toolType, files);
+        const jobResponse = await createPdfJob(toolType, files, splitOptions);
         setJobId(jobResponse.jobId);
         console.log('Job created with ID:', jobResponse.jobId);
 
@@ -115,7 +121,7 @@ export default function ToolPage({ toolType }: ToolPageProps) {
         );
       } else {
         // Batch processing mode
-        const jobResponses = await createBatchPdfJobs(toolType, files);
+        const jobResponses = await createBatchPdfJobs(toolType, files, splitOptions);
         const initialJobs: BatchJob[] = jobResponses.map((response, index) => ({
           jobId: response.jobId,
           fileName: files[index].name,
@@ -265,6 +271,16 @@ export default function ToolPage({ toolType }: ToolPageProps) {
             onFilesSelected={handleFilesSelected}
           />
         </div>
+
+        {/* Split Options - Only show for split-pdf tool */}
+        {toolType === 'split-pdf' && files.length > 0 && processingState === "idle" && (
+          <div className="mt-6">
+            <SplitOptions
+              options={splitOptions}
+              onOptionsChange={setSplitOptions}
+            />
+          </div>
+        )}
 
         {/* Process Button */}
         {files.length > 0 && processingState === "idle" && (

@@ -1,9 +1,13 @@
 import { apiRequest } from "./queryClient";
 import type { PdfJobResponse } from "@shared/schema";
 
-export async function createPdfJob(toolType: string, files: File[]): Promise<PdfJobResponse> {
+export async function createPdfJob(toolType: string, files: File[], splitOptions?: any): Promise<PdfJobResponse> {
   const formData = new FormData();
   formData.append('toolType', toolType);
+  
+  if (splitOptions) {
+    formData.append('splitOptions', JSON.stringify(splitOptions));
+  }
   
   files.forEach(file => {
     formData.append('files', file);
@@ -13,10 +17,14 @@ export async function createPdfJob(toolType: string, files: File[]): Promise<Pdf
   return response.json();
 }
 
-export async function createBatchPdfJobs(toolType: string, files: File[]): Promise<PdfJobResponse[]> {
+export async function createBatchPdfJobs(toolType: string, files: File[], splitOptions?: any): Promise<PdfJobResponse[]> {
   const formData = new FormData();
   formData.append('toolType', toolType);
   formData.append('batchMode', 'true');
+  
+  if (splitOptions) {
+    formData.append('splitOptions', JSON.stringify(splitOptions));
+  }
   
   files.forEach(file => {
     formData.append('files', file);

@@ -31,7 +31,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create PDF job endpoint
   app.post("/api/pdf/process", upload.array("files"), async (req, res) => {
     try {
-      const { toolType } = req.body;
+      const { toolType, splitOptions } = req.body;
       const files = req.files as Express.Multer.File[];
       
       console.log(`Processing PDF job - Tool: ${toolType}, Files: ${files?.length}`);
@@ -83,7 +83,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         setTimeout(async () => {
           try {
             await storage.updatePdfJobStatus(job.jobId, "processing");
-            const outputFile = await processPdfJob(job.jobId, toolType, inputFiles);
+            let parsedSplitOptions;
+            if (splitOptions) {
+              try {
+                parsedSplitOptions = JSON.parse(splitOptions);
+              } catch (e) {
+                console.error("Invalid split options:", e);
+              }
+            }
+            const outputFile = await processPdfJob(job.jobId, toolType, inputFiles, parsedSplitOptions);
             await storage.updatePdfJobStatus(job.jobId, "completed", outputFile);
           } catch (error) {
             await storage.updatePdfJobStatus(
@@ -109,7 +117,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create batch PDF jobs endpoint
   app.post("/api/pdf/batch-process", upload.array("files"), async (req, res) => {
     try {
-      const { toolType } = req.body;
+      const { toolType, splitOptions } = req.body;
       const files = req.files as Express.Multer.File[];
       
       if (!files || files.length === 0) {
@@ -181,7 +189,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
           setTimeout(async () => {
             try {
-              const outputFile = await processPdfJob(job.jobId, toolType, inputFiles);
+              let parsedSplitOptions;
+              if (splitOptions) {
+                try {
+                  parsedSplitOptions = JSON.parse(splitOptions);
+                } catch (e) {
+                  console.error("Invalid split options:", e);
+                }
+              }
+              const outputFile = await processPdfJob(job.jobId, toolType, inputFiles, parsedSplitOptions);
               await storage.updatePdfJobStatus(job.jobId, "completed", outputFile);
             } catch (error) {
               await storage.updatePdfJobStatus(
@@ -279,7 +295,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   return httpServer;
 }
 
-async function processPdfJob(jobId: string, toolType: string, inputFiles: string[]): Promise<string> {
+async function processPdfJob(jobId: string, toolType: string, inputFiles: string[], splitOptions?: any): Promise<string> {
   const outputDir = "outputs";
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
@@ -293,7 +309,7 @@ async function processPdfJob(jobId: string, toolType: string, inputFiles: string
         return await mergePdfs(inputFiles, outputFile);
       
       case 'split-pdf':
-        return await splitPdf(inputFiles[0], outputFile);
+        return await splitPdf(inputFiles[0], outputFile, splitOptions);
       
       case 'rotate-pdf':
         return await rotatePdf(inputFiles[0], outputFile);
@@ -381,28 +397,87 @@ async function mergePdfs(inputFiles: string[], outputFile: string): Promise<stri
   return outputFile;
 }
 
-async function splitPdf(inputFile: string, outputFile: string): Promise<string> {
+async function splitPdf(inputFile: string, outputFile: string, splitOptions?: any): Promise<string> {
   const pdfBytes = fs.readFileSync(inputFile);
   const pdf = await PDFDocument.load(pdfBytes);
   const pageCount = pdf.getPageCount();
   
-  // For simplicity, split into individual pages
   const outputDir = path.dirname(outputFile);
   const baseName = path.basename(outputFile, '.pdf');
   const zipFiles: string[] = [];
   
-  for (let i = 0; i < pageCount; i++) {
+  let pagesToSplit: number[] = [];
+  
+  if (splitOptions && splitOptions.splitType !== 'all') {
+    switch (splitOptions.splitType) {
+      case 'range':
+        const start = Math.max(1, Math.min(splitOptions.pageRange.start, pageCount));
+        const end = Math.max(start, Math.min(splitOptions.pageRange.end, pageCount));
+        for (let i = start; i <= end; i++) {
+          pagesToSplit.push(i - 1); // Convert to 0-based index
+        }
+        break;
+        
+      case 'specific':
+        if (splitOptions.specificPages) {
+          const pageString = splitOptions.specificPages.replace(/\s/g, '');
+          const parts = pageString.split(',');
+          
+          for (const part of parts) {
+            if (part.includes('-')) {
+              const [rangeStart, rangeEnd] = part.split('-').map(num => parseInt(num));
+              if (!isNaN(rangeStart) && !isNaN(rangeEnd)) {
+                const start = Math.max(1, Math.min(rangeStart, pageCount));
+                const end = Math.max(start, Math.min(rangeEnd, pageCount));
+                for (let i = start; i <= end; i++) {
+                  pagesToSplit.push(i - 1);
+                }
+              }
+            } else {
+              const pageNum = parseInt(part);
+              if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= pageCount) {
+                pagesToSplit.push(pageNum - 1);
+              }
+            }
+          }
+        }
+        break;
+        
+      default:
+        // Default to all pages
+        for (let i = 0; i < pageCount; i++) {
+          pagesToSplit.push(i);
+        }
+    }
+  } else {
+    // Default: split all pages
+    for (let i = 0; i < pageCount; i++) {
+      pagesToSplit.push(i);
+    }
+  }
+  
+  // Remove duplicates and sort
+  pagesToSplit = [...new Set(pagesToSplit)].sort((a, b) => a - b);
+  
+  if (pagesToSplit.length === 0) {
+    throw new Error('No valid pages specified for splitting');
+  }
+  
+  // Create separate PDFs for each specified page
+  for (let i = 0; i < pagesToSplit.length; i++) {
+    const pageIndex = pagesToSplit[i];
     const newPdf = await PDFDocument.create();
-    const [page] = await newPdf.copyPages(pdf, [i]);
+    const [page] = await newPdf.copyPages(pdf, [pageIndex]);
     newPdf.addPage(page);
     
-    const pageOutputFile = path.join(outputDir, `${baseName}_page_${i + 1}.pdf`);
+    const pageOutputFile = path.join(outputDir, `${baseName}_page_${pageIndex + 1}.pdf`);
     const pageBytes = await newPdf.save();
     fs.writeFileSync(pageOutputFile, pageBytes);
     zipFiles.push(pageOutputFile);
   }
   
-  // Return the first page as the main output (in real app, would create a zip)
+  // For now, return the first split file (in production, would create a zip)
+  // TODO: Create a zip file containing all split PDFs
   return zipFiles[0];
 }
 
