@@ -35,8 +35,19 @@ export function Header() {
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex space-x-8">
               {navigation.slice(1).map((item) => (
-                <Link key={item.name} href={item.href}>
-                  <span
+                item.href.startsWith('/#') ? (
+                  <a 
+                    key={item.name} 
+                    href={item.href}
+                    onClick={(e) => {
+                      if (item.href === '/#tools' && window.location.pathname === '/') {
+                        e.preventDefault();
+                        const element = document.getElementById('tools');
+                        if (element) {
+                          element.scrollIntoView({ behavior: 'smooth' });
+                        }
+                      }
+                    }}
                     className={`transition-colors cursor-pointer text-sm font-medium ${
                       isActive(item.href)
                         ? "text-pdfo-blue"
@@ -44,8 +55,20 @@ export function Header() {
                     }`}
                   >
                     {item.name}
-                  </span>
-                </Link>
+                  </a>
+                ) : (
+                  <Link key={item.name} href={item.href}>
+                    <span
+                      className={`transition-colors cursor-pointer text-sm font-medium ${
+                        isActive(item.href)
+                          ? "text-pdfo-blue"
+                          : "text-gray-600 dark:text-gray-300 hover:text-pdfo-blue"
+                      }`}
+                    >
+                      {item.name}
+                    </span>
+                  </Link>
+                )
               ))}
             </nav>
 
@@ -62,8 +85,19 @@ export function Header() {
               <SheetContent side="right" className="w-80">
                 <nav className="flex flex-col space-y-4 mt-8">
                   {navigation.map((item) => (
-                    <Link key={item.name} href={item.href}>
-                      <span
+                    item.href.startsWith('/#') ? (
+                      <a 
+                        key={item.name} 
+                        href={item.href}
+                        onClick={(e) => {
+                          if (item.href === '/#tools' && window.location.pathname === '/') {
+                            e.preventDefault();
+                            const element = document.getElementById('tools');
+                            if (element) {
+                              element.scrollIntoView({ behavior: 'smooth' });
+                            }
+                          }
+                        }}
                         className={`block px-4 py-2 rounded-lg transition-colors cursor-pointer ${
                           isActive(item.href)
                             ? "text-pdfo-blue bg-blue-50 dark:bg-blue-900/20 font-medium"
@@ -71,8 +105,20 @@ export function Header() {
                         }`}
                       >
                         {item.name}
-                      </span>
-                    </Link>
+                      </a>
+                    ) : (
+                      <Link key={item.name} href={item.href}>
+                        <span
+                          className={`block px-4 py-2 rounded-lg transition-colors cursor-pointer ${
+                            isActive(item.href)
+                              ? "text-pdfo-blue bg-blue-50 dark:bg-blue-900/20 font-medium"
+                              : "text-pdfo-dark-grey dark:text-gray-300 hover:text-pdfo-blue hover:bg-gray-50 dark:hover:bg-gray-800"
+                          }`}
+                        >
+                          {item.name}
+                        </span>
+                      </Link>
+                    )
                   ))}
                 </nav>
               </SheetContent>

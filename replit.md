@@ -147,6 +147,12 @@ The application follows a full-stack architecture with clear separation between 
   - **Footer Navigation**: Proper routing to all company pages with Link components
   - **Professional Content**: Enterprise-grade content for all company information pages
   - **Responsive Design**: All company pages fully responsive with consistent PDFo branding
+- July 08, 2025. Fixed navigation system and smooth scrolling functionality:
+  - **Header Navigation**: Proper routing with anchor links for homepage sections vs direct page links
+  - **Smooth Scrolling**: Tools menu item smoothly scrolls to tools section when on homepage
+  - **Mixed Navigation**: Homepage anchors use <a> tags with smooth scroll, pages use <Link> components
+  - **Active Navigation**: All company pages (About, Privacy, Terms, Contact) working correctly
+  - **Accessibility Fixes**: DialogContent components now include proper DialogTitle and DialogDescription
 
 
 ## User Preferences
