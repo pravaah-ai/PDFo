@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check, X, Download, RotateCw, FileText, Archive } from "lucide-react";
 import { downloadPdfFile } from "@/lib/pdf-api";
 import { useToast } from "@/hooks/use-toast";
+import { AdSenseAd } from "@/components/adsense-ad";
 import type { PdfJobResponse } from "@shared/schema";
 
 interface BatchJob {
@@ -94,6 +95,16 @@ export function BatchProcessing({ jobs, onDownloadAll, onReset }: BatchProcessin
 
   return (
     <div className="space-y-6">
+      {/* AdSense Ad */}
+      <div className="bg-gray-50 py-6 rounded-lg">
+        <AdSenseAd 
+          adSlot="1234567890"
+          adFormat="auto"
+          className="mb-4"
+          style={{ minHeight: "200px" }}
+        />
+      </div>
+      
       {/* Overall Progress */}
       <Card>
         <CardHeader>

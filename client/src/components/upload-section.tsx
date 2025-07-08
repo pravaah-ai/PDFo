@@ -23,6 +23,9 @@ export function UploadSection({ acceptedFileTypes, onFilesSelected, className }:
           <p className="text-gray-600">
             Select multiple PDF files to process them
           </p>
+          <p className="text-sm text-blue-600 mt-2 font-medium">
+            💡 Upload multiple files for batch processing
+          </p>
         </div>
 
         {/* File Upload Component */}

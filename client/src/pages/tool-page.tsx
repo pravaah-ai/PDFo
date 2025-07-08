@@ -6,6 +6,7 @@ import { UploadSection } from "@/components/upload-section";
 import { ProcessingStates } from "@/components/processing-states";
 import { BatchProcessing } from "@/components/batch-processing";
 import { DonateButton } from "@/components/donate-button";
+import { AdSenseAd } from "@/components/adsense-ad";
 import { Button } from "@/components/ui/button";
 import { getToolConfig } from "@/lib/tools-config";
 import { createPdfJob, createBatchPdfJobs, pollJobStatus, pollBatchJobsStatus, downloadPdfFile } from "@/lib/pdf-api";
@@ -266,34 +267,51 @@ export default function ToolPage({ toolType }: ToolPageProps) {
         onFilesSelected={handleFilesSelected}
       />
       
+      {/* Processing Button Section */}
+      {files.length > 0 && processingState === "idle" && (
+        <div className="bg-white py-8">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div className="space-y-4">
+              {batchMode && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                  <p className="text-blue-800 font-medium mb-2">
+                    🎯 Batch Processing Mode
+                  </p>
+                  <p className="text-blue-700 text-sm">
+                    You've selected {files.length} files. They will be processed individually and you can download each result separately.
+                  </p>
+                </div>
+              )}
+              
+              <Button
+                onClick={handleProcess}
+                size="lg"
+                className="bg-pdfo-blue hover:bg-pdfo-blue-light text-white px-8 py-4 text-lg"
+              >
+                <WandSparkles className="mr-2 h-5 w-5" />
+                {batchMode ? `Process ${files.length} Files` : toolConfig.title}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* AdSense Ad Section */}
+      {files.length > 0 && (
+        <div className="bg-gray-50 py-8">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <AdSenseAd 
+              adSlot="1234567890"
+              adFormat="auto"
+              className="mb-8"
+              style={{ minHeight: "250px" }}
+            />
+          </div>
+        </div>
+      )}
+      
       <main className="pt-6 pb-16 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-
-          {files.length > 0 && processingState === "idle" && (
-            <div className="text-center mb-8">
-              <div className="space-y-4">
-                {batchMode && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                    <p className="text-blue-800 font-medium mb-2">
-                      🎯 Batch Processing Mode
-                    </p>
-                    <p className="text-blue-700 text-sm">
-                      You've selected {files.length} files. They will be processed individually and you can download each result separately.
-                    </p>
-                  </div>
-                )}
-                
-                <Button
-                  onClick={handleProcess}
-                  size="lg"
-                  className="bg-pdfo-blue hover:bg-pdfo-blue-light text-white px-8 py-4 text-lg"
-                >
-                  <WandSparkles className="mr-2 h-5 w-5" />
-                  {batchMode ? `Process ${files.length} Files` : toolConfig.title}
-                </Button>
-              </div>
-            </div>
-          )}
 
           {batchMode && processingState !== "idle" ? (
             <BatchProcessing
