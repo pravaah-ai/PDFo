@@ -46,8 +46,8 @@ export function MergeOptions({ options, files, onOptionsChange, onReorderFiles, 
           <div className="space-y-2">
             {options.fileOrder.map((fileIndex, index) => (
               <div key={fileIndex} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="flex items-center gap-2 flex-1">
-                  <FileText className="h-4 w-4 text-gray-500" />
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <FileText className="h-4 w-4 text-gray-500 flex-shrink-0" />
                   <span className="text-sm truncate">{files[fileIndex]?.name}</span>
                 </div>
                 <div className="flex gap-1">

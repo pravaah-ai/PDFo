@@ -100,10 +100,10 @@ export function FileUpload({
             <Card key={index} className="border shadow-sm">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <FileText className="h-8 w-8 text-red-600" />
-                    <div>
-                      <p className="font-medium text-pdfo-dark-grey">
+                  <div className="flex items-center space-x-3 flex-1 min-w-0">
+                    <FileText className="h-8 w-8 text-red-600 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-pdfo-dark-grey truncate">
                         {file.name}
                       </p>
                       <p className="text-sm text-gray-500">
