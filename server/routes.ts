@@ -1430,68 +1430,204 @@ async function convertToPdf(inputFiles: string[], outputFile: string, toolType: 
           }
         }
       } else if (toolType === 'word-to-pdf') {
-        // For Word to PDF conversion, extract text content
+        // Enhanced Word to PDF conversion with better formatting
         try {
           const wordBuffer = fs.readFileSync(inputFile);
-          const result = await mammoth.extractRawText({ buffer: wordBuffer });
-          const text = result.value;
+          console.log(`Processing Word document: ${inputFile}, size: ${wordBuffer.length} bytes`);
           
-          const page = pdf.addPage();
+          // Extract text with HTML formatting preserved
+          const result = await mammoth.convertToHtml({ buffer: wordBuffer });
+          const htmlContent = result.value;
+          const textResult = await mammoth.extractRawText({ buffer: wordBuffer });
+          const rawText = textResult.value;
+          
+          console.log(`Extracted HTML content length: ${htmlContent.length}`);
+          console.log(`Extracted text length: ${rawText.length}`);
+          
+          // Parse the content and create structured PDF
+          const lines = rawText.split('\n').filter(line => line.trim());
+          const pageMargin = 50;
+          const lineHeight = 14;
+          const pageHeight = 792;
+          const pageWidth = 612;
+          const contentWidth = pageWidth - (pageMargin * 2);
+          
+          let currentPage = pdf.addPage([pageWidth, pageHeight]);
+          let yPosition = pageHeight - pageMargin;
+          
           const helveticaFont = await pdf.embedFont(StandardFonts.Helvetica);
+          const helveticaBold = await pdf.embedFont(StandardFonts.HelveticaBold);
           
-          page.drawText('Word Document Converted to PDF', {
-            x: 50,
-            y: 750,
-            size: 20,
-            font: helveticaFont,
-            color: rgb(0, 0, 0),
-          });
-          page.drawText(`Source: ${path.basename(inputFile)}`, {
-            x: 50,
-            y: 720,
-            size: 12,
-            font: helveticaFont,
-            color: rgb(0.3, 0.3, 0.3),
-          });
-          
-          // Add extracted text (first 2000 chars)
-          const displayText = text.substring(0, 2000);
-          const lines = displayText.split('\n');
-          let yPosition = 680;
-          
-          lines.forEach(line => {
-            if (yPosition > 50) {
-              const truncatedLine = line.length > 80 ? line.substring(0, 80) + '...' : line;
-              page.drawText(truncatedLine, {
-                x: 50,
-                y: yPosition,
-                size: 10,
+          // Function to add new page when needed
+          const addNewPageIfNeeded = (requiredSpace = 40) => {
+            if (yPosition < pageMargin + requiredSpace) {
+              currentPage = pdf.addPage([pageWidth, pageHeight]);
+              yPosition = pageHeight - pageMargin;
+              
+              // Add page number
+              const pageNumber = pdf.getPageCount();
+              currentPage.drawText(`Page ${pageNumber}`, {
+                x: pageWidth - 100,
+                y: 20,
+                size: 8,
                 font: helveticaFont,
-                color: rgb(0, 0, 0),
+                color: rgb(0.5, 0.5, 0.5),
               });
-              yPosition -= 15;
+              
+              return true;
             }
-          });
+            return false;
+          };
           
-          if (text.length > 2000) {
-            page.drawText(`... (${text.length - 2000} more characters)`, {
-              x: 50,
-              y: yPosition - 20,
+          // Function to wrap text to fit page width
+          const wrapText = (text, font, size, maxWidth) => {
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = '';
+            
+            for (const word of words) {
+              const testLine = currentLine + (currentLine ? ' ' : '') + word;
+              const testWidth = font.widthOfTextAtSize(testLine, size);
+              
+              if (testWidth <= maxWidth) {
+                currentLine = testLine;
+              } else {
+                if (currentLine) {
+                  lines.push(currentLine);
+                  currentLine = word;
+                } else {
+                  // Word is too long, break it
+                  lines.push(word);
+                }
+              }
+            }
+            
+            if (currentLine) {
+              lines.push(currentLine);
+            }
+            
+            return lines;
+          };
+          
+          // Add document header
+          currentPage.drawText('Word Document Converted to PDF', {
+            x: pageMargin,
+            y: yPosition,
+            size: 16,
+            font: helveticaBold,
+            color: rgb(0, 0.4, 0.8),
+          });
+          yPosition -= 25;
+          
+          currentPage.drawText(`Source: ${path.basename(inputFile)}`, {
+            x: pageMargin,
+            y: yPosition,
+            size: 10,
+            font: helveticaFont,
+            color: rgb(0.5, 0.5, 0.5),
+          });
+          yPosition -= 30;
+          
+          // Process each line of content
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) {
+              yPosition -= lineHeight / 2; // Smaller space for empty lines
+              continue;
+            }
+            
+            // Determine text style based on content
+            let fontSize = 11;
+            let font = helveticaFont;
+            let color = rgb(0, 0, 0);
+            let isHeader = false;
+            
+            // Check if line looks like a header/title
+            if (line.length < 60 && (
+              line.toUpperCase() === line || 
+              line.includes('EXPERIENCE') || 
+              line.includes('EDUCATION') || 
+              line.includes('SKILLS') ||
+              line.includes('CONTACT') ||
+              /^[A-Z][a-z]+ [A-Z][a-z]+$/.test(line) // Name pattern
+            )) {
+              fontSize = 13;
+              font = helveticaBold;
+              color = rgb(0.2, 0.2, 0.2);
+              isHeader = true;
+            }
+            
+            // Check if it's a date or location (common in resumes)
+            if (/\d{4}|\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/.test(line)) {
+              fontSize = 10;
+              color = rgb(0.4, 0.4, 0.4);
+            }
+            
+            // Check if it's an email or phone
+            if (line.includes('@') || /\d{3}[-.\s]?\d{3}[-.\s]?\d{4}/.test(line)) {
+              fontSize = 10;
+              color = rgb(0.2, 0.4, 0.8);
+            }
+            
+            // Wrap text to fit page width
+            const wrappedLines = wrapText(line, font, fontSize, contentWidth);
+            
+            // Check if we need a new page
+            addNewPageIfNeeded(wrappedLines.length * lineHeight + 10);
+            
+            // Add extra space before headers
+            if (isHeader && i > 0) {
+              yPosition -= 8;
+            }
+            
+            // Draw each wrapped line
+            for (const wrappedLine of wrappedLines) {
+              currentPage.drawText(wrappedLine, {
+                x: pageMargin,
+                y: yPosition,
+                size: fontSize,
+                font: font,
+                color: color,
+              });
+              yPosition -= lineHeight;
+              
+              // Check if we need a new page after each line
+              if (yPosition < pageMargin + 20) {
+                addNewPageIfNeeded();
+              }
+            }
+            
+            // Add extra space after headers
+            if (isHeader) {
+              yPosition -= 4;
+            }
+          }
+          
+          // Add footer with conversion info on all pages
+          const pages = pdf.getPages();
+          pages.forEach((page, index) => {
+            page.drawText(`Converted by PDFo • ${new Date().toLocaleDateString()}`, {
+              x: pageMargin,
+              y: 20,
               size: 8,
               font: helveticaFont,
-              color: rgb(0.5, 0.5, 0.5),
+              color: rgb(0.7, 0.7, 0.7),
             });
-          }
+          });
+          
+          console.log(`Word to PDF conversion completed successfully with ${pages.length} pages`);
+          
         } catch (error) {
           console.error('Error reading Word file:', error);
           const page = pdf.addPage();
           const helveticaFont = await pdf.embedFont(StandardFonts.Helvetica);
-          page.drawText('Word to PDF Conversion', {
+          
+          page.drawText('Word to PDF Conversion Error', {
             x: 50,
             y: 750,
             size: 20,
             font: helveticaFont,
-            color: rgb(0, 0, 0),
+            color: rgb(1, 0, 0),
           });
           page.drawText(`Error reading file: ${path.basename(inputFile)}`, {
             x: 50,
@@ -1499,6 +1635,13 @@ async function convertToPdf(inputFiles: string[], outputFile: string, toolType: 
             size: 12,
             font: helveticaFont,
             color: rgb(1, 0, 0),
+          });
+          page.drawText(`Error details: ${error.message}`, {
+            x: 50,
+            y: 690,
+            size: 10,
+            font: helveticaFont,
+            color: rgb(0.5, 0.5, 0.5),
           });
         }
       } else {
