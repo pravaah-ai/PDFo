@@ -31,6 +31,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
+  // Assets route to serve attached assets (photos, images, etc.)
+  app.get("/api/assets/:filename", (req, res) => {
+    const { filename } = req.params;
+    const filePath = path.join(process.cwd(), "attached_assets", filename);
+    
+    // Check if file exists
+    if (fs.existsSync(filePath)) {
+      // Set appropriate content type based on file extension
+      const ext = path.extname(filename).toLowerCase();
+      const contentTypes = {
+        '.jpg': 'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.png': 'image/png',
+        '.gif': 'image/gif',
+        '.webp': 'image/webp',
+        '.svg': 'image/svg+xml'
+      };
+      
+      const contentType = contentTypes[ext] || 'application/octet-stream';
+      res.set('Content-Type', contentType);
+      res.set('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
+      res.sendFile(filePath);
+    } else {
+      res.status(404).json({ error: "Asset not found" });
+    }
+  });
+
   // SEO routes
   app.get("/robots.txt", (req, res) => {
     res.set('Content-Type', 'text/plain');
