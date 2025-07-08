@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { Twitter, Linkedin } from "lucide-react";
+import logoPng from "@assets/logo_1751964519607.png";
 
 export function Footer() {
   const pdfTools = [
@@ -21,6 +22,19 @@ export function Footer() {
   return (
     <footer className="bg-slate-900 text-white py-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Logo and Description */}
+        <div className="mb-12">
+          <Link href="/">
+            <div className="flex items-center space-x-3 mb-6 cursor-pointer">
+              <img src={logoPng} alt="PDFo Logo" className="h-10 w-auto" />
+              <span className="text-2xl font-bold">PDFo</span>
+            </div>
+          </Link>
+          <p className="text-slate-400 text-lg max-w-2xl">
+            Your complete PDF toolkit for all your document needs. Fast, secure, and completely free online PDF tools to merge, split, convert, and edit your PDF files with professional quality.
+          </p>
+        </div>
+
         {/* Social Media Icons */}
         <div className="flex justify-start space-x-4 mb-12">
           <a href="#" className="text-slate-400 hover:text-white transition-colors">
