@@ -20,7 +20,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-slate-900 text-white py-12">
+    <footer className="bg-slate-900 dark:bg-gray-950 text-white py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Logo and Description */}
         <div className="mb-6">
@@ -29,7 +29,7 @@ export function Footer() {
               <img src={logoPng} alt="PDFo Logo" className="h-12 w-auto" />
             </div>
           </Link>
-          <p className="text-slate-400 text-base max-w-2xl">
+          <p className="text-slate-400 dark:text-gray-400 text-base max-w-2xl">
             Your complete PDF toolkit for all your document needs. Fast, secure, and completely free online PDF tools to merge, split, convert, and edit your PDF files with professional quality.
           </p>
         </div>
@@ -92,8 +92,8 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-slate-700 mt-6 pt-4 text-center">
-          <p className="text-slate-400 text-sm">
+        <div className="border-t border-slate-700 dark:border-gray-800 mt-6 pt-4 text-center">
+          <p className="text-slate-400 dark:text-gray-400 text-sm">
             &copy; 2025 PDFo | Made with ❤️ by Pravaah AI Tech
           </p>
         </div>
