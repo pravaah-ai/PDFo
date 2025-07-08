@@ -20,23 +20,22 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-slate-900 text-white py-16">
+    <footer className="bg-slate-900 text-white py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Logo and Description */}
-        <div className="mb-12">
+        <div className="mb-8">
           <Link href="/">
-            <div className="flex items-center space-x-3 mb-6 cursor-pointer">
-              <img src={logoPng} alt="PDFo Logo" className="h-10 w-auto" />
-              <span className="text-2xl font-bold">PDFo</span>
+            <div className="mb-4 cursor-pointer">
+              <img src={logoPng} alt="PDFo Logo" className="h-12 w-auto" />
             </div>
           </Link>
-          <p className="text-slate-400 text-lg max-w-2xl">
+          <p className="text-slate-400 text-base max-w-2xl">
             Your complete PDF toolkit for all your document needs. Fast, secure, and completely free online PDF tools to merge, split, convert, and edit your PDF files with professional quality.
           </p>
         </div>
 
         {/* Social Media Icons */}
-        <div className="flex justify-start space-x-4 mb-12">
+        <div className="flex justify-start space-x-4 mb-8">
           <a href="#" className="text-slate-400 hover:text-white transition-colors">
             <Twitter className="h-6 w-6" />
           </a>
@@ -48,11 +47,11 @@ export function Footer() {
           </a>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* PDF Tools Section */}
           <div>
-            <h3 className="text-xl font-bold mb-8 text-white">PDF Tools</h3>
-            <ul className="space-y-4 text-slate-400">
+            <h3 className="text-xl font-bold mb-6 text-white">PDF Tools</h3>
+            <ul className="space-y-3 text-slate-400">
               {pdfTools.map((tool) => (
                 <li key={tool.name}>
                   <Link href={tool.href}>
@@ -67,8 +66,8 @@ export function Footer() {
 
           {/* Company Section */}
           <div>
-            <h3 className="text-xl font-bold mb-8 text-white">Company</h3>
-            <ul className="space-y-4 text-slate-400">
+            <h3 className="text-xl font-bold mb-6 text-white">Company</h3>
+            <ul className="space-y-3 text-slate-400">
               {company.map((item) => (
                 <li key={item.name}>
                   {item.href.startsWith('http') ? (
@@ -93,8 +92,8 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-slate-700 mt-12 pt-8 text-center">
-          <p className="text-slate-400 text-sm mb-4">
+        <div className="border-t border-slate-700 mt-8 pt-6 text-center">
+          <p className="text-slate-400 text-sm mb-2">
             &copy; 2025 Pravaah INC. All rights reserved.
           </p>
           <p className="text-slate-400 text-sm">
