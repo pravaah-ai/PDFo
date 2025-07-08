@@ -289,6 +289,10 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           options = metadataOptions;
         } else if (toolType === 'watermark-pdf') {
           options = watermarkOptions;
+        } else if (toolType === 'lock-pdf') {
+          options = lockOptions;
+        } else if (toolType === 'unlock-pdf') {
+          options = unlockOptions;
         }
         const jobResponse = await createPdfJob(toolType, files, options);
         setJobId(jobResponse.jobId);

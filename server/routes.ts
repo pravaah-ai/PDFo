@@ -237,7 +237,7 @@ Allow: /`);
   // Create PDF job endpoint
   app.post("/api/pdf/process", upload.array("files"), async (req, res) => {
     try {
-      const { toolType, splitOptions, reorderOptions, deleteOptions, pageNumbersOptions, metadataOptions, watermarkOptions } = req.body;
+      const { toolType, splitOptions, reorderOptions, deleteOptions, pageNumbersOptions, metadataOptions, watermarkOptions, lockOptions, unlockOptions } = req.body;
       const files = req.files as Express.Multer.File[];
       
       console.log(`Processing PDF job - Tool: ${toolType}, Files: ${files?.length}`);
@@ -331,6 +331,18 @@ Allow: /`);
                 parsedOptions = JSON.parse(req.body.watermarkOptions);
               } catch (e) {
                 console.error("Invalid watermark options:", e);
+              }
+            } else if (req.body.lockOptions) {
+              try {
+                parsedOptions = JSON.parse(req.body.lockOptions);
+              } catch (e) {
+                console.error("Invalid lock options:", e);
+              }
+            } else if (req.body.unlockOptions) {
+              try {
+                parsedOptions = JSON.parse(req.body.unlockOptions);
+              } catch (e) {
+                console.error("Invalid unlock options:", e);
               }
             }
             const outputFile = await processPdfJob(job.jobId, toolType, inputFiles, parsedOptions);
@@ -566,10 +578,10 @@ async function processPdfJob(jobId: string, toolType: string, inputFiles: string
         return await removePages(inputFiles[0], outputFile, options);
       
       case 'lock-pdf':
-        return await lockPdf(inputFiles[0], outputFile);
+        return await lockPdf(inputFiles[0], outputFile, options);
       
       case 'unlock-pdf':
-        return await unlockPdf(inputFiles[0], outputFile);
+        return await unlockPdf(inputFiles[0], outputFile, options);
       
       case 'compress-pdf':
         return await compressPdf(inputFiles[0], outputFile);
@@ -1555,7 +1567,7 @@ async function editPdf(inputFile: string, outputFile: string): Promise<string> {
   return outputFile;
 }
 
-async function lockPdf(inputFile: string, outputFile: string): Promise<string> {
+async function lockPdf(inputFile: string, outputFile: string, lockOptions?: any): Promise<string> {
   const pdfBytes = fs.readFileSync(inputFile);
   const pdf = await PDFDocument.load(pdfBytes);
   
@@ -1587,7 +1599,7 @@ async function lockPdf(inputFile: string, outputFile: string): Promise<string> {
     });
     
     // Add protection watermark
-    page.drawText('🔒 PROTECTED DOCUMENT', {
+    page.drawText('[PROTECTED DOCUMENT]', {
       x: width - 180,
       y: height - 25,
       size: 8,
@@ -1625,7 +1637,7 @@ async function lockPdf(inputFile: string, outputFile: string): Promise<string> {
   return outputFile;
 }
 
-async function unlockPdf(inputFile: string, outputFile: string): Promise<string> {
+async function unlockPdf(inputFile: string, outputFile: string, unlockOptions?: any): Promise<string> {
   try {
     const pdfBytes = fs.readFileSync(inputFile);
     const pdf = await PDFDocument.load(pdfBytes);
@@ -1654,7 +1666,7 @@ async function unlockPdf(inputFile: string, outputFile: string): Promise<string>
       });
       
       // Add unlock confirmation
-      page.drawText('🔓 DOCUMENT UNLOCKED', {
+      page.drawText('[DOCUMENT UNLOCKED]', {
         x: width - 150,
         y: height - 20,
         size: 8,

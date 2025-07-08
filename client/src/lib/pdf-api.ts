@@ -20,6 +20,10 @@ export async function createPdfJob(toolType: string, files: File[], options?: an
       formData.append('metadataOptions', JSON.stringify(options));
     } else if (toolType === 'watermark-pdf') {
       formData.append('watermarkOptions', JSON.stringify(options));
+    } else if (toolType === 'lock-pdf') {
+      formData.append('lockOptions', JSON.stringify(options));
+    } else if (toolType === 'unlock-pdf') {
+      formData.append('unlockOptions', JSON.stringify(options));
     }
   }
   
