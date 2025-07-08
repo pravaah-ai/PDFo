@@ -11,8 +11,9 @@ export function Header() {
   const navigation = [
     { name: "Home", href: "/" },
     { name: "Tools", href: "/#tools" },
-    { name: "About", href: "/#about" },
-    { name: "Contact", href: "/#contact" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
+    { name: "Privacy", href: "/privacy" },
   ];
 
   const isActive = (href: string) => {
@@ -31,7 +32,7 @@ export function Header() {
           </Link>
 
           <div className="flex items-center space-x-6">
-            {/* Desktop Navigation - Hidden for cleaner look */}
+            {/* Desktop Navigation */}
             <nav className="hidden lg:flex space-x-8">
               {navigation.slice(1).map((item) => (
                 <Link key={item.name} href={item.href}>
