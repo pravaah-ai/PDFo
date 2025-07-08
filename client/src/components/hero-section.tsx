@@ -14,24 +14,28 @@ export function HeroSection() {
           Merge, split, convert, and edit your PDF files with our comprehensive suite of professional tools. Fast, secure, and completely free.
         </p>
         <div className="max-w-sm mx-auto space-y-4">
-          <Link href="#tools">
-            <Button
-              size="lg"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-medium rounded-lg w-full shadow-sm"
-            >
-              Explore Tools
-            </Button>
-          </Link>
+          <Button
+            size="lg"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg font-medium rounded-lg w-full shadow-sm"
+            onClick={() => {
+              const toolsSection = document.getElementById('tools');
+              if (toolsSection) {
+                toolsSection.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+          >
+            Explore Tools
+          </Button>
           
           <div className="flex justify-center">
             <a
               href="https://www.buymeacoffee.com/pravaahaitech"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-black font-medium rounded-lg transition-colors"
+              className="inline-flex items-center px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-black font-medium rounded-lg transition-colors shadow-sm"
             >
-              <span className="mr-2">☕</span>
-              Buy me a coffee
+              <span className="mr-2">☕☕☕</span>
+              Buy me lots of coffee
             </a>
           </div>
         </div>
