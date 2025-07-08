@@ -237,7 +237,7 @@ Allow: /`);
   // Create PDF job endpoint
   app.post("/api/pdf/process", upload.array("files"), async (req, res) => {
     try {
-      const { toolType, splitOptions, reorderOptions, deleteOptions, pageNumbersOptions, metadataOptions } = req.body;
+      const { toolType, splitOptions, reorderOptions, deleteOptions, pageNumbersOptions, metadataOptions, watermarkOptions } = req.body;
       const files = req.files as Express.Multer.File[];
       
       console.log(`Processing PDF job - Tool: ${toolType}, Files: ${files?.length}`);
@@ -325,6 +325,12 @@ Allow: /`);
                 parsedOptions = JSON.parse(req.body.metadataOptions);
               } catch (e) {
                 console.error("Invalid metadata options:", e);
+              }
+            } else if (req.body.watermarkOptions) {
+              try {
+                parsedOptions = JSON.parse(req.body.watermarkOptions);
+              } catch (e) {
+                console.error("Invalid watermark options:", e);
               }
             }
             const outputFile = await processPdfJob(job.jobId, toolType, inputFiles, parsedOptions);
@@ -551,7 +557,7 @@ async function processPdfJob(jobId: string, toolType: string, inputFiles: string
         return await rotatePdf(inputFiles[0], outputFile, options);
       
       case 'watermark-pdf':
-        return await watermarkPdf(inputFiles[0], outputFile);
+        return await watermarkPdf(inputFiles[0], outputFile, options);
       
       case 'page-numbers-pdf':
         return await addPageNumbers(inputFiles[0], outputFile, options);
@@ -757,21 +763,106 @@ async function rotatePdf(inputFile: string, outputFile: string, rotateOptions?: 
   return outputFile;
 }
 
-async function watermarkPdf(inputFile: string, outputFile: string): Promise<string> {
+async function watermarkPdf(inputFile: string, outputFile: string, watermarkOptions?: any): Promise<string> {
   const pdfBytes = fs.readFileSync(inputFile);
   const pdf = await PDFDocument.load(pdfBytes);
   const helveticaFont = await pdf.embedFont(StandardFonts.Helvetica);
   
+  // Get watermark options or use defaults
+  const watermarkText = watermarkOptions?.text || 'CONFIDENTIAL';
+  const position = watermarkOptions?.position || 'center';
+  const opacity = watermarkOptions?.opacity || 0.3;
+  const rotation = watermarkOptions?.rotation || 0;
+  const fontSize = watermarkOptions?.fontSize || 24;
+  const color = watermarkOptions?.color || '#666666';
+  
+  // Convert hex color to RGB
+  const hexToRgb = (hex: string) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16) / 255,
+      g: parseInt(result[2], 16) / 255,
+      b: parseInt(result[3], 16) / 255,
+    } : { r: 0.5, g: 0.5, b: 0.5 };
+  };
+  
+  const textColor = hexToRgb(color);
+  
   const pages = pdf.getPages();
   pages.forEach(page => {
     const { width, height } = page.getSize();
-    page.drawText('CONFIDENTIAL', {
-      x: width / 2 - 50,
-      y: height / 2,
-      size: 20,
+    
+    // Calculate position based on selection
+    let x = width / 2;
+    let y = height / 2;
+    
+    switch (position) {
+      case 'top-left':
+        x = 100;
+        y = height - 100;
+        break;
+      case 'top-center':
+        x = width / 2;
+        y = height - 100;
+        break;
+      case 'top-right':
+        x = width - 100;
+        y = height - 100;
+        break;
+      case 'center-left':
+        x = 100;
+        y = height / 2;
+        break;
+      case 'center':
+        x = width / 2;
+        y = height / 2;
+        break;
+      case 'center-right':
+        x = width - 100;
+        y = height / 2;
+        break;
+      case 'bottom-left':
+        x = 100;
+        y = 100;
+        break;
+      case 'bottom-center':
+        x = width / 2;
+        y = 100;
+        break;
+      case 'bottom-right':
+        x = width - 100;
+        y = 100;
+        break;
+      case 'diagonal':
+        // Create diagonal watermark effect
+        const positions = [
+          { x: width * 0.2, y: height * 0.8 },
+          { x: width * 0.5, y: height * 0.5 },
+          { x: width * 0.8, y: height * 0.2 }
+        ];
+        
+        positions.forEach(pos => {
+          page.drawText(watermarkText, {
+            x: pos.x,
+            y: pos.y,
+            size: fontSize,
+            font: helveticaFont,
+            color: rgb(textColor.r, textColor.g, textColor.b),
+            opacity: opacity,
+            rotate: degrees(rotation),
+          });
+        });
+        return; // Skip the single watermark below
+    }
+    
+    page.drawText(watermarkText, {
+      x: x,
+      y: y,
+      size: fontSize,
       font: helveticaFont,
-      color: rgb(0.5, 0.5, 0.5),
-      opacity: 0.3,
+      color: rgb(textColor.r, textColor.g, textColor.b),
+      opacity: opacity,
+      rotate: degrees(rotation),
     });
   });
   

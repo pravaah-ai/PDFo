@@ -156,9 +156,12 @@ export function WatermarkOptions({ options, onOptionsChange, className }: Waterm
               <SelectItem value="top-left">Top Left</SelectItem>
               <SelectItem value="top-center">Top Center</SelectItem>
               <SelectItem value="top-right">Top Right</SelectItem>
+              <SelectItem value="center-left">Center Left</SelectItem>
+              <SelectItem value="center-right">Center Right</SelectItem>
               <SelectItem value="bottom-left">Bottom Left</SelectItem>
               <SelectItem value="bottom-center">Bottom Center</SelectItem>
               <SelectItem value="bottom-right">Bottom Right</SelectItem>
+              <SelectItem value="diagonal">Diagonal Pattern</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -192,12 +195,12 @@ export function WatermarkOptions({ options, onOptionsChange, className }: Waterm
                   <SelectValue placeholder="Select color" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="black">Black</SelectItem>
-                  <SelectItem value="gray">Gray</SelectItem>
-                  <SelectItem value="blue">Blue</SelectItem>
-                  <SelectItem value="red">Red</SelectItem>
-                  <SelectItem value="green">Green</SelectItem>
-                  <SelectItem value="white">White</SelectItem>
+                  <SelectItem value="#000000">Black</SelectItem>
+                  <SelectItem value="#666666">Gray</SelectItem>
+                  <SelectItem value="#0066cc">Blue</SelectItem>
+                  <SelectItem value="#cc0000">Red</SelectItem>
+                  <SelectItem value="#00cc00">Green</SelectItem>
+                  <SelectItem value="#ffffff">White</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -207,11 +210,11 @@ export function WatermarkOptions({ options, onOptionsChange, className }: Waterm
         {/* Opacity */}
         <div>
           <Label className="text-sm font-medium mb-2 block">
-            Opacity: {options.opacity}%
+            Opacity: {Math.round(options.opacity * 100)}%
           </Label>
           <Slider
-            value={[options.opacity]}
-            onValueChange={handleOpacityChange}
+            value={[options.opacity * 100]}
+            onValueChange={(value) => handleOpacityChange([value[0] / 100])}
             max={100}
             min={10}
             step={10}

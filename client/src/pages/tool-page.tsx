@@ -280,6 +280,8 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           options = pageNumbersOptions;
         } else if (toolType === 'edit-metadata') {
           options = metadataOptions;
+        } else if (toolType === 'watermark-pdf') {
+          options = watermarkOptions;
         }
         const jobResponse = await createPdfJob(toolType, files, options);
         setJobId(jobResponse.jobId);
