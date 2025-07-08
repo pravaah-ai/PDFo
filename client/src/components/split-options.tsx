@@ -3,13 +3,14 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { FileText, Scissors, Hash } from "lucide-react";
+import { FileText, Scissors, Hash, Package, Download, Files } from "lucide-react";
 
 interface SplitOptionsProps {
   options: {
     splitType: string;
     pageRange: { start: number; end: number };
     specificPages: string;
+    outputFormat: string;
   };
   onOptionsChange: (options: any) => void;
   className?: string;
@@ -38,6 +39,13 @@ export function SplitOptions({ options, onOptionsChange, className }: SplitOptio
     onOptionsChange({
       ...options,
       specificPages: value
+    });
+  };
+
+  const handleOutputFormatChange = (value: string) => {
+    onOptionsChange({
+      ...options,
+      outputFormat: value
     });
   };
 
@@ -135,11 +143,34 @@ export function SplitOptions({ options, onOptionsChange, className }: SplitOptio
 
         <Separator />
         
+        {/* Output Format */}
+        <div>
+          <Label className="text-sm font-medium mb-3 block">Output Format</Label>
+          <RadioGroup value={options.outputFormat || 'zip'} onValueChange={handleOutputFormatChange}>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="zip" id="output-zip" />
+              <Label htmlFor="output-zip" className="flex items-center gap-2">
+                <Package className="h-4 w-4 text-blue-600" />
+                ZIP Archive (Recommended)
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="separate" id="output-separate" />
+              <Label htmlFor="output-separate" className="flex items-center gap-2">
+                <Files className="h-4 w-4 text-green-600" />
+                Separate Files
+              </Label>
+            </div>
+          </RadioGroup>
+        </div>
+        
         <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
-          <p className="text-sm text-blue-800 dark:text-blue-200">
-            <strong>Note:</strong> Each selected page or range will be saved as a separate PDF file. 
-            You'll receive a zip file containing all the split PDFs.
-          </p>
+          <div className="flex items-center gap-2">
+            <Download className="h-4 w-4 text-blue-600" />
+            <p className="text-sm text-blue-800 dark:text-blue-200">
+              <strong>Note:</strong> {options.outputFormat === 'zip' ? 'All split PDFs will be packaged into a single ZIP file for easy download.' : 'Each split PDF will be available as a separate download.'}
+            </p>
+          </div>
         </div>
       </CardContent>
     </Card>

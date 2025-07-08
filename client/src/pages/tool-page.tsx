@@ -9,6 +9,16 @@ import { DonateButton } from "@/components/donate-button";
 import { AdSenseAd } from "@/components/adsense-ad";
 import { PrivacyNotice } from "@/components/privacy-notice";
 import { SplitOptions } from "@/components/split-options";
+import { MergeOptions } from "@/components/merge-options";
+import { ReorderOptions } from "@/components/reorder-options";
+import { DeletePagesOptions } from "@/components/delete-pages-options";
+import { RotateOptions } from "@/components/rotate-options";
+import { PageNumbersOptions } from "@/components/page-numbers-options";
+import { MetadataOptions } from "@/components/metadata-options";
+import { WatermarkOptions } from "@/components/watermark-options";
+import { LockOptions } from "@/components/lock-options";
+import { UnlockOptions } from "@/components/unlock-options";
+import { CompressOptions } from "@/components/compress-options";
 
 import { Button } from "@/components/ui/button";
 import { getToolConfig } from "@/lib/tools-config";
@@ -41,7 +51,73 @@ export default function ToolPage({ toolType }: ToolPageProps) {
   const [splitOptions, setSplitOptions] = useState({
     splitType: "all", // "all", "range", "specific"
     pageRange: { start: 1, end: 1 },
-    specificPages: ""
+    specificPages: "",
+    outputFormat: "zip" // "zip", "separate"
+  });
+
+  const [mergeOptions, setMergeOptions] = useState({
+    keepBookmarks: true,
+    fileOrder: [] as number[]
+  });
+
+  const [reorderOptions, setReorderOptions] = useState({
+    pageOrder: [] as number[]
+  });
+
+  const [deleteOptions, setDeleteOptions] = useState({
+    pagesToDelete: "",
+    parsedPages: [] as number[]
+  });
+
+  const [rotateOptions, setRotateOptions] = useState({
+    rotationAngle: 90,
+    pagesToRotate: "",
+    parsedPages: [] as number[],
+    rotateAll: true
+  });
+
+  const [pageNumbersOptions, setPageNumbersOptions] = useState({
+    position: "bottom-center",
+    startFrom: 1,
+    fontSize: 12,
+    color: "black"
+  });
+
+  const [metadataOptions, setMetadataOptions] = useState({
+    title: "",
+    author: "",
+    subject: "",
+    keywords: "",
+    clearExisting: false
+  });
+
+  const [watermarkOptions, setWatermarkOptions] = useState({
+    type: "text" as 'text' | 'image',
+    text: "",
+    image: null as File | null,
+    position: "center",
+    opacity: 50,
+    rotation: 0,
+    fontSize: 24,
+    color: "gray"
+  });
+
+  const [lockOptions, setLockOptions] = useState({
+    password: "",
+    confirmPassword: "",
+    requirePasswordToOpen: true,
+    restrictEditing: false,
+    restrictPrinting: false
+  });
+
+  const [unlockOptions, setUnlockOptions] = useState({
+    password: ""
+  });
+
+  const [compressOptions, setCompressOptions] = useState({
+    compressionLevel: "medium" as 'low' | 'medium' | 'high',
+    estimatedSize: 0,
+    originalSize: 0
   });
 
   
@@ -68,6 +144,24 @@ export default function ToolPage({ toolType }: ToolPageProps) {
     setProcessingState("idle");
     setBatchMode(selectedFiles.length > 1 && toolType !== 'merge-pdf');
     setBatchJobs([]);
+    
+    // Initialize file order for merge options
+    if (toolType === "merge-pdf") {
+      setMergeOptions(prev => ({
+        ...prev,
+        fileOrder: selectedFiles.map((_, index) => index)
+      }));
+    }
+    
+    // Initialize compression options with original size
+    if (toolType === "compress-pdf" && selectedFiles.length > 0) {
+      const totalSize = selectedFiles.reduce((sum, file) => sum + file.size, 0);
+      setCompressOptions(prev => ({
+        ...prev,
+        originalSize: totalSize,
+        estimatedSize: totalSize * 0.6 // Default medium compression
+      }));
+    }
   };
 
   const handleProcess = async () => {
@@ -279,12 +373,107 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           />
         </div>
 
-        {/* Split Options - Only show for split-pdf tool */}
+        {/* Tool-specific options */}
         {toolType === 'split-pdf' && files.length > 0 && processingState === "idle" && (
           <div className="mt-6">
             <SplitOptions
               options={splitOptions}
               onOptionsChange={setSplitOptions}
+            />
+          </div>
+        )}
+
+        {toolType === "merge-pdf" && files.length > 0 && processingState === "idle" && (
+          <div className="mt-6">
+            <MergeOptions
+              options={mergeOptions}
+              files={files}
+              onOptionsChange={setMergeOptions}
+              onReorderFiles={(newOrder) => setMergeOptions(prev => ({ ...prev, fileOrder: newOrder }))}
+            />
+          </div>
+        )}
+
+        {toolType === "reorder-pages" && files.length > 0 && processingState === "idle" && (
+          <div className="mt-6">
+            <ReorderOptions
+              options={reorderOptions}
+              totalPages={10} // This would be dynamically set based on PDF analysis
+              onOptionsChange={setReorderOptions}
+            />
+          </div>
+        )}
+
+        {toolType === "delete-pages" && files.length > 0 && processingState === "idle" && (
+          <div className="mt-6">
+            <DeletePagesOptions
+              options={deleteOptions}
+              totalPages={10} // This would be dynamically set based on PDF analysis
+              onOptionsChange={setDeleteOptions}
+            />
+          </div>
+        )}
+
+        {toolType === "rotate-pdf" && files.length > 0 && processingState === "idle" && (
+          <div className="mt-6">
+            <RotateOptions
+              options={rotateOptions}
+              totalPages={10} // This would be dynamically set based on PDF analysis
+              onOptionsChange={setRotateOptions}
+            />
+          </div>
+        )}
+
+        {toolType === "add-page-numbers" && files.length > 0 && processingState === "idle" && (
+          <div className="mt-6">
+            <PageNumbersOptions
+              options={pageNumbersOptions}
+              onOptionsChange={setPageNumbersOptions}
+            />
+          </div>
+        )}
+
+        {toolType === "edit-metadata" && files.length > 0 && processingState === "idle" && (
+          <div className="mt-6">
+            <MetadataOptions
+              options={metadataOptions}
+              onOptionsChange={setMetadataOptions}
+            />
+          </div>
+        )}
+
+        {toolType === "watermark-pdf" && files.length > 0 && processingState === "idle" && (
+          <div className="mt-6">
+            <WatermarkOptions
+              options={watermarkOptions}
+              onOptionsChange={setWatermarkOptions}
+            />
+          </div>
+        )}
+
+        {toolType === "lock-pdf" && files.length > 0 && processingState === "idle" && (
+          <div className="mt-6">
+            <LockOptions
+              options={lockOptions}
+              onOptionsChange={setLockOptions}
+            />
+          </div>
+        )}
+
+        {toolType === "unlock-pdf" && files.length > 0 && processingState === "idle" && (
+          <div className="mt-6">
+            <UnlockOptions
+              options={unlockOptions}
+              onOptionsChange={setUnlockOptions}
+            />
+          </div>
+        )}
+
+        {toolType === "compress-pdf" && files.length > 0 && processingState === "idle" && (
+          <div className="mt-6">
+            <CompressOptions
+              options={compressOptions}
+              onOptionsChange={setCompressOptions}
             />
           </div>
         )}
