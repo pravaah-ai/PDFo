@@ -211,14 +211,14 @@ export default function About() {
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
             Meet Our Team
           </h2>
-          <div className="max-w-md mx-auto">
+          <div className="max-w-lg mx-auto">
             <Card className="text-center">
               <CardContent className="p-8">
                 <div className="mb-6">
                   <img 
-                    src="/attached_assets/image_1751993053503.jpg" 
+                    src="attached_assets/image_1751993053503.jpg" 
                     alt="Purvish Patel - Founder of Pravaah AI Tech"
-                    className="w-48 h-64 mx-auto object-cover rounded-lg border-4 border-blue-500 shadow-lg"
+                    className="w-56 h-72 mx-auto object-cover rounded-lg border-4 border-blue-500 shadow-lg"
                   />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
