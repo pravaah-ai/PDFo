@@ -101,10 +101,10 @@ export default function ToolPage({ toolType }: ToolPageProps) {
     text: "",
     image: null as File | null,
     position: "center",
-    opacity: 50,
+    opacity: 0.5,
     rotation: 0,
     fontSize: 24,
-    color: "gray"
+    color: "#666666"
   });
 
   const [lockOptions, setLockOptions] = useState({
@@ -293,6 +293,8 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           options = lockOptions;
         } else if (toolType === 'unlock-pdf') {
           options = unlockOptions;
+        } else if (toolType === 'compress-pdf') {
+          options = compressOptions;
         }
         const jobResponse = await createPdfJob(toolType, files, options);
         setJobId(jobResponse.jobId);

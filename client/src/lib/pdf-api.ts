@@ -24,6 +24,8 @@ export async function createPdfJob(toolType: string, files: File[], options?: an
       formData.append('lockOptions', JSON.stringify(options));
     } else if (toolType === 'unlock-pdf') {
       formData.append('unlockOptions', JSON.stringify(options));
+    } else if (toolType === 'compress-pdf') {
+      formData.append('compressOptions', JSON.stringify(options));
     }
   }
   

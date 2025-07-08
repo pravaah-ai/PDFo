@@ -237,7 +237,7 @@ Allow: /`);
   // Create PDF job endpoint
   app.post("/api/pdf/process", upload.array("files"), async (req, res) => {
     try {
-      const { toolType, splitOptions, reorderOptions, deleteOptions, pageNumbersOptions, metadataOptions, watermarkOptions, lockOptions, unlockOptions } = req.body;
+      const { toolType, splitOptions, reorderOptions, deleteOptions, pageNumbersOptions, metadataOptions, watermarkOptions, lockOptions, unlockOptions, compressOptions } = req.body;
       const files = req.files as Express.Multer.File[];
       
       console.log(`Processing PDF job - Tool: ${toolType}, Files: ${files?.length}`);
@@ -343,6 +343,12 @@ Allow: /`);
                 parsedOptions = JSON.parse(req.body.unlockOptions);
               } catch (e) {
                 console.error("Invalid unlock options:", e);
+              }
+            } else if (req.body.compressOptions) {
+              try {
+                parsedOptions = JSON.parse(req.body.compressOptions);
+              } catch (e) {
+                console.error("Invalid compress options:", e);
               }
             }
             const outputFile = await processPdfJob(job.jobId, toolType, inputFiles, parsedOptions);
@@ -584,7 +590,7 @@ async function processPdfJob(jobId: string, toolType: string, inputFiles: string
         return await unlockPdf(inputFiles[0], outputFile, options);
       
       case 'compress-pdf':
-        return await compressPdf(inputFiles[0], outputFile);
+        return await compressPdf(inputFiles[0], outputFile, options);
       
       case 'reorder-pages':
         return await reorderPages(inputFiles[0], outputFile, options);
@@ -1708,16 +1714,13 @@ async function unlockPdf(inputFile: string, outputFile: string, unlockOptions?: 
   }
 }
 
-async function compressPdf(inputFile: string, outputFile: string): Promise<string> {
+async function compressPdf(inputFile: string, outputFile: string, compressOptions?: any): Promise<string> {
   const pdfBytes = fs.readFileSync(inputFile);
   const pdf = await PDFDocument.load(pdfBytes);
   
-  // Perform basic compression by optimizing the PDF structure
-  // Remove unused objects and optimize the file structure
+  // Get compression level from options
+  const compressionLevel = compressOptions?.compressionLevel || 'medium';
   const originalSize = pdfBytes.length;
-  
-  // Get all pages and process them for optimization
-  const pages = pdf.getPages();
   
   // Add compression metadata
   pdf.setTitle('Compressed PDF Document');
@@ -1725,32 +1728,119 @@ async function compressPdf(inputFile: string, outputFile: string): Promise<strin
   pdf.setProducer('PDFo PDF Compression Tool');
   pdf.setModificationDate(new Date());
   
-  // Save with optimized settings (pdf-lib automatically applies some compression)
-  const compressedBytes = await pdf.save({
+  // Apply compression settings based on level
+  let saveOptions: any = {
     objectsPerTick: 50,
     updateFieldAppearances: false,
+    useObjectStreams: true,
+    addDefaultPage: false,
+  };
+  
+  switch (compressionLevel) {
+    case 'high':
+      saveOptions = {
+        ...saveOptions,
+        objectsPerTick: 200,
+        updateFieldAppearances: false,
+        useObjectStreams: true,
+        addDefaultPage: false,
+      };
+      break;
+    case 'medium':
+      saveOptions = {
+        ...saveOptions,
+        objectsPerTick: 100,
+        updateFieldAppearances: false,
+        useObjectStreams: true,
+      };
+      break;
+    case 'low':
+      saveOptions = {
+        ...saveOptions,
+        objectsPerTick: 25,
+        updateFieldAppearances: true,
+        useObjectStreams: false,
+      };
+      break;
+  }
+  
+  // Create a new PDF and copy pages to remove unnecessary data
+  const newPdf = await PDFDocument.create();
+  const pages = pdf.getPages();
+  
+  // Copy pages one by one to strip unnecessary data
+  const copiedPages = await newPdf.copyPages(pdf, Array.from({ length: pages.length }, (_, i) => i));
+  copiedPages.forEach(page => newPdf.addPage(page));
+  
+  // Remove metadata that increases file size if high compression
+  if (compressionLevel === 'high') {
+    // Clear some metadata to reduce size
+    newPdf.setKeywords('');
+    newPdf.setSubject('');
+  } else {
+    // Keep some metadata for lower compression levels
+    newPdf.setTitle(pdf.getTitle() || 'Compressed PDF');
+    newPdf.setAuthor(pdf.getAuthor() || '');
+    newPdf.setSubject(pdf.getSubject() || '');
+    newPdf.setKeywords(pdf.getKeywords() || '');
+  }
+  
+  // First save to get initial compression
+  const firstPassBytes = await newPdf.save(saveOptions);
+  
+  // Load the first pass result and save again for additional compression
+  const secondPassPdf = await PDFDocument.load(firstPassBytes);
+  const finalBytes = await secondPassPdf.save({
+    ...saveOptions,
+    objectsPerTick: saveOptions.objectsPerTick * 2,
   });
   
-  const compressedSize = compressedBytes.length;
-  const compressionRatio = Math.round(((originalSize - compressedSize) / originalSize) * 100);
+  // Calculate compression statistics
+  const finalSize = finalBytes.length;
+  const compressionRatio = Math.round(((originalSize - finalSize) / originalSize) * 100);
+  const sizeReduction = originalSize - finalSize;
   
-  // Add a subtle watermark indicating compression
-  const helveticaFont = await pdf.embedFont(StandardFonts.Helvetica);
-  if (pages.length > 0) {
-    const firstPage = pages[0];
+  // Add compression info to the first page
+  const helveticaFont = await secondPassPdf.embedFont(StandardFonts.Helvetica);
+  const finalPages = secondPassPdf.getPages();
+  
+  if (finalPages.length > 0) {
+    const firstPage = finalPages[0];
     const { width } = firstPage.getSize();
-    firstPage.drawText(`Compressed by PDFo • ${compressionRatio}% reduction`, {
-      x: width - 200,
-      y: 10,
+    
+    // Add compression info
+    firstPage.drawText(`Compressed by PDFo - ${compressionLevel.toUpperCase()} level`, {
+      x: width - 220,
+      y: 25,
       size: 6,
       font: helveticaFont,
-      color: rgb(0.7, 0.7, 0.7),
-      opacity: 0.4,
+      color: rgb(0.6, 0.6, 0.6),
+      opacity: 0.5,
+    });
+    
+    firstPage.drawText(`Size reduced by ${Math.round(sizeReduction / 1024)}KB (${compressionRatio}%)`, {
+      x: width - 220,
+      y: 15,
+      size: 6,
+      font: helveticaFont,
+      color: rgb(0.6, 0.6, 0.6),
+      opacity: 0.5,
     });
   }
   
-  const finalBytes = await pdf.save();
-  fs.writeFileSync(outputFile, finalBytes);
+  // Final save with maximum compression
+  const compressedBytes = await secondPassPdf.save({
+    ...saveOptions,
+    objectsPerTick: Math.min(saveOptions.objectsPerTick * 3, 500),
+  });
+  
+  fs.writeFileSync(outputFile, compressedBytes);
+  
+  // Log compression results
+  const actualFinalSize = compressedBytes.length;
+  const actualCompressionRatio = Math.round(((originalSize - actualFinalSize) / originalSize) * 100);
+  console.log(`PDF Compression: ${originalSize} bytes -> ${actualFinalSize} bytes (${actualCompressionRatio}% reduction)`);
+  
   return outputFile;
 }
 
