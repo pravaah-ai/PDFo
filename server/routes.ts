@@ -564,7 +564,38 @@ async function processPdfJob(jobId: string, toolType: string, inputFiles: string
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  const outputFile = path.join(outputDir, `PDFo_${toolType}_${jobId}.pdf`);
+  // Determine the correct file extension based on tool type
+  let extension = '.pdf';
+  switch (toolType) {
+    case 'pdf-to-txt':
+      extension = '.txt';
+      break;
+    case 'pdf-to-word':
+      extension = '.docx';
+      break;
+    case 'pdf-to-excel':
+      extension = '.xlsx';
+      break;
+    case 'pdf-to-json':
+      extension = '.json';
+      break;
+    case 'pdf-to-ppt':
+      extension = '.pptx';
+      break;
+    case 'pdf-to-jpg':
+      extension = '.jpg';
+      break;
+    case 'pdf-to-png':
+      extension = '.png';
+      break;
+    case 'pdf-to-tiff':
+      extension = '.tiff';
+      break;
+    default:
+      extension = '.pdf';
+  }
+
+  const outputFile = path.join(outputDir, `PDFo_${toolType}_${jobId}${extension}`);
   
   try {
     switch (toolType) {
@@ -1029,7 +1060,8 @@ async function convertPdfToImages(inputFile: string, outputFile: string, toolTyp
       break;
   }
   
-  const imageOutputFile = outputFile.replace('.pdf', `.${extension}`);
+  // Output file already has the correct extension
+  const imageOutputFile = outputFile;
   
   try {
     // Direct conversion using PDF-lib and Sharp
@@ -1572,11 +1604,11 @@ Conversion: Successful with fallback method`;
   let finalOutput = outputFile;
   switch (toolType) {
     case 'pdf-to-txt':
-      finalOutput = outputFile.replace('.pdf', '.txt');
+      // Output file already has correct .txt extension
       fs.writeFileSync(finalOutput, actualText);
       break;
     case 'pdf-to-word':
-      finalOutput = outputFile.replace('.pdf', '.docx');
+      // Output file already has correct .docx extension
       // Create a proper Word document using a simple RTF format that Word can read
       const rtfContent = `{\\rtf1\\ansi\\deff0 {\\fonttbl {\\f0 Times New Roman;}}
 {\\colortbl;\\red0\\green0\\blue0;\\red0\\green0\\blue255;}
@@ -1591,7 +1623,7 @@ ${actualText.replace(/\n/g, '\\par\n')}
       fs.writeFileSync(finalOutput, rtfContent);
       break;
     case 'pdf-to-excel':
-      finalOutput = outputFile.replace('.pdf', '.xlsx');
+      // Output file already has correct .xlsx extension
       // Create Excel file with structured data
       const workbook = XLSX.utils.book_new();
       
@@ -1648,7 +1680,7 @@ ${actualText.replace(/\n/g, '\\par\n')}
       XLSX.writeFile(workbook, finalOutput);
       break;
     case 'pdf-to-json':
-      finalOutput = outputFile.replace('.pdf', '.json');
+      // Output file already has correct .json extension
       const jsonLines = actualText.split('\n').filter(line => line.trim());
       const jsonContent = JSON.stringify({ 
         document: {
@@ -1689,7 +1721,7 @@ ${actualText.replace(/\n/g, '\\par\n')}
       fs.writeFileSync(finalOutput, jsonContent);
       break;
     case 'pdf-to-ppt':
-      finalOutput = outputFile.replace('.pdf', '.pptx');
+      // Output file already has correct .pptx extension
       // Create a proper PowerPoint presentation
       const pptx = new PptxGenJS();
       
