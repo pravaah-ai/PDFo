@@ -27,7 +27,14 @@ export function Header() {
         <div className="flex justify-between items-center py-6">
           <Link href="/">
             <div className="flex items-center space-x-3 cursor-pointer">
-              <img src={logoPng} alt="PDFo Logo" className="h-10 w-auto" />
+              <img 
+                src={logoPng} 
+                alt="PDFo Logo" 
+                className="h-10 w-auto"
+                loading="eager"
+                decoding="sync"
+                fetchpriority="high"
+              />
             </div>
           </Link>
 
