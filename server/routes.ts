@@ -237,7 +237,7 @@ Allow: /`);
   // Create PDF job endpoint
   app.post("/api/pdf/process", upload.array("files"), async (req, res) => {
     try {
-      const { toolType, splitOptions } = req.body;
+      const { toolType, splitOptions, reorderOptions } = req.body;
       const files = req.files as Express.Multer.File[];
       
       console.log(`Processing PDF job - Tool: ${toolType}, Files: ${files?.length}`);
@@ -289,15 +289,21 @@ Allow: /`);
         setTimeout(async () => {
           try {
             await storage.updatePdfJobStatus(job.jobId, "processing");
-            let parsedSplitOptions;
+            let parsedOptions;
             if (splitOptions) {
               try {
-                parsedSplitOptions = JSON.parse(splitOptions);
+                parsedOptions = JSON.parse(splitOptions);
               } catch (e) {
                 console.error("Invalid split options:", e);
               }
+            } else if (reorderOptions) {
+              try {
+                parsedOptions = JSON.parse(reorderOptions);
+              } catch (e) {
+                console.error("Invalid reorder options:", e);
+              }
             }
-            const outputFile = await processPdfJob(job.jobId, toolType, inputFiles, parsedSplitOptions);
+            const outputFile = await processPdfJob(job.jobId, toolType, inputFiles, parsedOptions);
             await storage.updatePdfJobStatus(job.jobId, "completed", outputFile);
           } catch (error) {
             await storage.updatePdfJobStatus(
@@ -501,7 +507,7 @@ Allow: /`);
   return httpServer;
 }
 
-async function processPdfJob(jobId: string, toolType: string, inputFiles: string[], splitOptions?: any): Promise<string> {
+async function processPdfJob(jobId: string, toolType: string, inputFiles: string[], options?: any): Promise<string> {
   const outputDir = "outputs";
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
@@ -539,7 +545,7 @@ async function processPdfJob(jobId: string, toolType: string, inputFiles: string
         return await compressPdf(inputFiles[0], outputFile);
       
       case 'reorder-pages':
-        return await reorderPages(inputFiles[0], outputFile);
+        return await reorderPages(inputFiles[0], outputFile, options);
       
       case 'edit-metadata':
         return await editMetadata(inputFiles[0], outputFile);
@@ -1512,7 +1518,7 @@ async function compressPdf(inputFile: string, outputFile: string): Promise<strin
   return outputFile;
 }
 
-async function reorderPages(inputFile: string, outputFile: string): Promise<string> {
+async function reorderPages(inputFile: string, outputFile: string, reorderOptions?: any): Promise<string> {
   const pdfBytes = fs.readFileSync(inputFile);
   const pdf = await PDFDocument.load(pdfBytes);
   const pageCount = pdf.getPageCount();
@@ -1524,11 +1530,29 @@ async function reorderPages(inputFile: string, outputFile: string): Promise<stri
     return outputFile;
   }
   
-  // Create a new PDF and copy pages in reverse order (as an example)
+  // Create a new PDF and copy pages in the specified order
   const newPdf = await PDFDocument.create();
-  const pageIndices = Array.from({ length: pageCount }, (_, i) => pageCount - 1 - i);
-  const copiedPages = await newPdf.copyPages(pdf, pageIndices);
   
+  // Get page order from options or default to reverse order
+  let pageOrder: number[] = [];
+  if (reorderOptions && reorderOptions.pageOrder && Array.isArray(reorderOptions.pageOrder)) {
+    pageOrder = reorderOptions.pageOrder;
+  } else {
+    // Default to reverse order as fallback
+    pageOrder = Array.from({ length: pageCount }, (_, i) => pageCount - i);
+  }
+  
+  // Convert to 0-based indices and validate
+  const pageIndices = pageOrder
+    .map(pageNum => pageNum - 1)
+    .filter(index => index >= 0 && index < pageCount);
+  
+  // If no valid page indices, use original order
+  if (pageIndices.length === 0) {
+    pageIndices.push(...Array.from({ length: pageCount }, (_, i) => i));
+  }
+  
+  const copiedPages = await newPdf.copyPages(pdf, pageIndices);
   copiedPages.forEach(page => newPdf.addPage(page));
   
   // Add a note about reordering

@@ -66,6 +66,8 @@ export default function ToolPage({ toolType }: ToolPageProps) {
     pageOrder: [] as number[]
   });
 
+  const [pdfPageCount, setPdfPageCount] = useState(0);
+
   const [deleteOptions, setDeleteOptions] = useState({
     pagesToDelete: "",
     parsedPages: [] as number[]
@@ -149,7 +151,7 @@ export default function ToolPage({ toolType }: ToolPageProps) {
     }
   }, [toolConfig]);
 
-  const handleFilesSelected = (selectedFiles: File[]) => {
+  const handleFilesSelected = async (selectedFiles: File[]) => {
     setFiles(selectedFiles);
     setProcessingState("idle");
     setBatchMode(selectedFiles.length > 1 && toolType !== 'merge-pdf');
@@ -172,6 +174,46 @@ export default function ToolPage({ toolType }: ToolPageProps) {
         estimatedSize: totalSize * 0.6 // Default medium compression
       }));
     }
+    
+    // For reorder-pages, extract page count from the first PDF
+    if (toolType === "reorder-pages" && selectedFiles.length > 0) {
+      try {
+        const pageCount = await extractPageCount(selectedFiles[0]);
+        setPdfPageCount(pageCount);
+        setReorderOptions({
+          pageOrder: Array.from({ length: pageCount }, (_, i) => i + 1)
+        });
+      } catch (error) {
+        console.error('Error extracting page count:', error);
+        setPdfPageCount(10); // Default fallback
+        setReorderOptions({
+          pageOrder: Array.from({ length: 10 }, (_, i) => i + 1)
+        });
+      }
+    }
+  };
+
+  const extractPageCount = async (pdfFile: File): Promise<number> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const arrayBuffer = e.target?.result as ArrayBuffer;
+        const uint8Array = new Uint8Array(arrayBuffer);
+        const text = String.fromCharCode.apply(null, Array.from(uint8Array));
+        
+        // Simple regex to find page count in PDF structure
+        const pageMatch = text.match(/\/Count\s+(\d+)/);
+        if (pageMatch) {
+          resolve(parseInt(pageMatch[1]));
+        } else {
+          // Fallback: count page objects
+          const pageObjects = text.match(/\/Type\s*\/Page[^s]/g);
+          resolve(pageObjects ? pageObjects.length : 10);
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(pdfFile);
+    });
   };
 
   const handleProcess = async () => {
@@ -195,7 +237,13 @@ export default function ToolPage({ toolType }: ToolPageProps) {
       // For merge-pdf, always use single job mode even with multiple files
       if (toolType === 'merge-pdf' || (!batchMode || files.length === 1)) {
         // Single job processing (merge-pdf combines all files into one job)
-        const jobResponse = await createPdfJob(toolType, files, splitOptions);
+        let options = null;
+        if (toolType === 'split-pdf') {
+          options = splitOptions;
+        } else if (toolType === 'reorder-pages') {
+          options = reorderOptions;
+        }
+        const jobResponse = await createPdfJob(toolType, files, options);
         setJobId(jobResponse.jobId);
         console.log('Job created with ID:', jobResponse.jobId);
 
@@ -411,7 +459,7 @@ export default function ToolPage({ toolType }: ToolPageProps) {
           <div className="mt-6">
             <ReorderOptions
               options={reorderOptions}
-              totalPages={10} // This would be dynamically set based on PDF analysis
+              totalPages={pdfPageCount || 10}
               onOptionsChange={setReorderOptions}
             />
           </div>

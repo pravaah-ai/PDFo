@@ -1,12 +1,16 @@
 import { apiRequest } from "./queryClient";
 import type { PdfJobResponse } from "@shared/schema";
 
-export async function createPdfJob(toolType: string, files: File[], splitOptions?: any): Promise<PdfJobResponse> {
+export async function createPdfJob(toolType: string, files: File[], options?: any): Promise<PdfJobResponse> {
   const formData = new FormData();
   formData.append('toolType', toolType);
   
-  if (splitOptions) {
-    formData.append('splitOptions', JSON.stringify(splitOptions));
+  if (options) {
+    if (toolType === 'split-pdf') {
+      formData.append('splitOptions', JSON.stringify(options));
+    } else if (toolType === 'reorder-pages') {
+      formData.append('reorderOptions', JSON.stringify(options));
+    }
   }
   
   files.forEach(file => {
