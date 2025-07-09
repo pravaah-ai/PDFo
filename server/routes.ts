@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertPdfJobSchema } from "@shared/schema";
+import { insertPdfJobSchema, insertContactFormSchema } from "@shared/schema";
 import { z } from "zod";
 import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
@@ -262,6 +262,62 @@ Allow: /`);
     
     res.set('Content-Type', 'text/xml');
     res.send(sitemap);
+  });
+
+  // Contact form endpoint
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const validatedForm = insertContactFormSchema.parse(req.body);
+      const contactForm = await storage.createContactForm(validatedForm);
+      res.json({ 
+        success: true, 
+        message: "Contact form submitted successfully",
+        id: contactForm.id 
+      });
+    } catch (error) {
+      console.error("Contact form error:", error);
+      res.status(400).json({ 
+        error: "Failed to submit contact form",
+        details: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
+  // Get contact forms for admin
+  app.get("/api/contact", async (req, res) => {
+    try {
+      const { status } = req.query;
+      let contactForms;
+      
+      if (status && typeof status === 'string') {
+        contactForms = await storage.getContactFormsByStatus(status);
+      } else {
+        contactForms = await storage.getContactForms();
+      }
+      
+      res.json(contactForms);
+    } catch (error) {
+      console.error("Error fetching contact forms:", error);
+      res.status(500).json({ error: "Failed to fetch contact forms" });
+    }
+  });
+
+  // Update contact form status
+  app.patch("/api/contact/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      
+      if (!status || !["pending", "resolved", "closed"].includes(status)) {
+        return res.status(400).json({ error: "Invalid status" });
+      }
+      
+      await storage.updateContactFormStatus(parseInt(id), status);
+      res.json({ success: true, message: "Contact form status updated" });
+    } catch (error) {
+      console.error("Error updating contact form:", error);
+      res.status(500).json({ error: "Failed to update contact form" });
+    }
   });
 
   // Create PDF job endpoint

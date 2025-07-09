@@ -31,6 +31,7 @@ import FeedbackManagement from "@/pages/admin/feedback-management";
 import SEOManagement from "@/pages/admin/seo-management";
 import TagManagement from "@/pages/admin/tag-management";
 import AdminSettings from "@/pages/admin/admin-settings";
+import { ContactManagement } from "@/components/admin/ContactManagement";
 
 // Component to scroll to top on route change
 function ScrollToTop() {
@@ -121,6 +122,11 @@ function Router() {
         <Route path="/pdfo_pravaah_aite/settings" component={() => (
           <AdminRoute>
             <AdminSettings />
+          </AdminRoute>
+        )} />
+        <Route path="/pdfo_pravaah_aite/contact" component={() => (
+          <AdminRoute>
+            <ContactManagement />
           </AdminRoute>
         )} />
         <Route component={NotFound} />

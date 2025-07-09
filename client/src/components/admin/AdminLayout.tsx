@@ -19,7 +19,8 @@ import {
   Tag,
   Search,
   Shield,
-  LogOut
+  LogOut,
+  Mail
 } from "lucide-react";
 
 interface AdminLayoutProps {
@@ -37,6 +38,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     { name: "Blog Manager", href: "/pdfo_pravaah_aite/blogs", icon: Edit3 },
     { name: "SEO Manager", href: "/pdfo_pravaah_aite/seo", icon: Search },
     { name: "Tag Management", href: "/pdfo_pravaah_aite/tags", icon: Tag },
+    { name: "Contact Forms", href: "/pdfo_pravaah_aite/contact", icon: Mail },
     { name: "Feedback", href: "/pdfo_pravaah_aite/feedback", icon: MessageSquare },
     { name: "Settings", href: "/pdfo_pravaah_aite/settings", icon: Settings },
   ];

@@ -20,6 +20,18 @@ export const pdfJobs = pgTable("pdf_jobs", {
   completedAt: timestamp("completed_at"),
 });
 
+export const contactForms = pgTable("contact_forms", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  subject: text("subject").notNull(),
+  category: text("category").notNull(), // general, bug, feature, business, privacy
+  message: text("message").notNull(),
+  status: text("status").notNull().default("pending"), // pending, resolved, closed
+  createdAt: timestamp("created_at").defaultNow(),
+  resolvedAt: timestamp("resolved_at"),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -29,6 +41,13 @@ export const insertPdfJobSchema = createInsertSchema(pdfJobs).omit({
   id: true,
   createdAt: true,
   completedAt: true,
+});
+
+export const insertContactFormSchema = createInsertSchema(contactForms).omit({
+  id: true,
+  createdAt: true,
+  resolvedAt: true,
+  status: true,
 });
 
 export const pdfJobResponseSchema = z.object({
@@ -43,3 +62,5 @@ export type User = typeof users.$inferSelect;
 export type InsertPdfJob = z.infer<typeof insertPdfJobSchema>;
 export type PdfJob = typeof pdfJobs.$inferSelect;
 export type PdfJobResponse = z.infer<typeof pdfJobResponseSchema>;
+export type InsertContactForm = z.infer<typeof insertContactFormSchema>;
+export type ContactForm = typeof contactForms.$inferSelect;
