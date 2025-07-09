@@ -20,7 +20,7 @@ export function DonateButton({
       className={`bg-pdfo-warning hover:bg-amber-600 text-white ${className}`}
     >
       <a
-        href="https://buymeacoffee.com/pravaah"
+        href="https://www.buymeacoffee.com/pravaahaitech"
         target="_blank"
         rel="noopener noreferrer"
       >

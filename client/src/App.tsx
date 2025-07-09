@@ -51,79 +51,79 @@ function Router() {
       <ScrollToTop />
       <Switch>
         <Route path="/" component={Home} />
-      <Route path="/merge-pdf" component={() => <ToolPage toolType="merge-pdf" />} />
-      <Route path="/split-pdf" component={() => <ToolPage toolType="split-pdf" />} />
-      <Route path="/tool/split-pdf" component={() => <ToolPage toolType="split-pdf" />} />
-      <Route path="/delete-pdf-pages" component={() => <ToolPage toolType="delete-pdf-pages" />} />
-      <Route path="/rotate-pdf" component={() => <ToolPage toolType="rotate-pdf" />} />
-      <Route path="/watermark-pdf" component={() => <ToolPage toolType="watermark-pdf" />} />
-      <Route path="/page-numbers-pdf" component={() => <ToolPage toolType="page-numbers-pdf" />} />
-      <Route path="/pdf-editor" component={() => <ToolPage toolType="pdf-editor" />} />
-      <Route path="/pdf-to-jpg" component={() => <ToolPage toolType="pdf-to-jpg" />} />
-      <Route path="/pdf-to-png" component={() => <ToolPage toolType="pdf-to-png" />} />
-      <Route path="/pdf-to-tiff" component={() => <ToolPage toolType="pdf-to-tiff" />} />
-      <Route path="/pdf-to-json" component={() => <ToolPage toolType="pdf-to-json" />} />
-      <Route path="/pdf-to-word" component={() => <ToolPage toolType="pdf-to-word" />} />
-      <Route path="/pdf-to-ppt" component={() => <ToolPage toolType="pdf-to-ppt" />} />
-      <Route path="/pdf-to-txt" component={() => <ToolPage toolType="pdf-to-txt" />} />
-      <Route path="/pdf-to-excel" component={() => <ToolPage toolType="pdf-to-excel" />} />
-      <Route path="/png-to-pdf" component={() => <ToolPage toolType="png-to-pdf" />} />
-      <Route path="/word-to-pdf" component={() => <ToolPage toolType="word-to-pdf" />} />
-      <Route path="/lock-pdf" component={() => <ToolPage toolType="lock-pdf" />} />
-      <Route path="/unlock-pdf" component={() => <ToolPage toolType="unlock-pdf" />} />
-      <Route path="/compress-pdf" component={() => <ToolPage toolType="compress-pdf" />} />
-      <Route path="/reorder-pages" component={() => <ToolPage toolType="reorder-pages" />} />
-      <Route path="/edit-metadata" component={() => <ToolPage toolType="edit-metadata" />} />
-      <Route path="/excel-to-pdf" component={() => <ToolPage toolType="excel-to-pdf" />} />
-      <Route path="/privacy" component={Privacy} />
-      <Route path="/about" component={About} />
-      <Route path="/terms" component={Terms} />
-      <Route path="/contact" component={Contact} />
-      <Route path="/login" component={Login} />
-      <Route path="/signup" component={Signup} />
-      <Route path="/logout" component={Logout} />
-      <Route path="/dashboard" component={() => (
-        <ProtectedRoute>
-          <Dashboard />
-        </ProtectedRoute>
-      )} />
-      <Route path="/pdfo_pravaah_aite/login" component={AdminLogin} />
-      <Route path="/pdfo_pravaah_aite" component={() => (
-        <AdminRoute>
-          <AdminDashboard />
-        </AdminRoute>
-      )} />
-      <Route path="/pdfo_pravaah_aite/tools" component={() => (
-        <AdminRoute>
-          <ToolsManagement />
-        </AdminRoute>
-      )} />
-      <Route path="/pdfo_pravaah_aite/blogs" component={() => (
-        <AdminRoute>
-          <BlogManagement />
-        </AdminRoute>
-      )} />
-      <Route path="/pdfo_pravaah_aite/feedback" component={() => (
-        <AdminRoute>
-          <FeedbackManagement />
-        </AdminRoute>
-      )} />
-      <Route path="/pdfo_pravaah_aite/seo" component={() => (
-        <AdminRoute>
-          <SEOManagement />
-        </AdminRoute>
-      )} />
-      <Route path="/pdfo_pravaah_aite/tags" component={() => (
-        <AdminRoute>
-          <TagManagement />
-        </AdminRoute>
-      )} />
-      <Route path="/pdfo_pravaah_aite/settings" component={() => (
-        <AdminRoute>
-          <AdminSettings />
-        </AdminRoute>
-      )} />
-      <Route component={NotFound} />
+        <Route path="/merge-pdf" component={() => <ToolPage toolType="merge-pdf" />} />
+        <Route path="/split-pdf" component={() => <ToolPage toolType="split-pdf" />} />
+        <Route path="/tool/split-pdf" component={() => <ToolPage toolType="split-pdf" />} />
+        <Route path="/delete-pdf-pages" component={() => <ToolPage toolType="delete-pdf-pages" />} />
+        <Route path="/rotate-pdf" component={() => <ToolPage toolType="rotate-pdf" />} />
+        <Route path="/watermark-pdf" component={() => <ToolPage toolType="watermark-pdf" />} />
+        <Route path="/page-numbers-pdf" component={() => <ToolPage toolType="page-numbers-pdf" />} />
+        <Route path="/pdf-editor" component={() => <ToolPage toolType="pdf-editor" />} />
+        <Route path="/pdf-to-jpg" component={() => <ToolPage toolType="pdf-to-jpg" />} />
+        <Route path="/pdf-to-png" component={() => <ToolPage toolType="pdf-to-png" />} />
+        <Route path="/pdf-to-tiff" component={() => <ToolPage toolType="pdf-to-tiff" />} />
+        <Route path="/pdf-to-json" component={() => <ToolPage toolType="pdf-to-json" />} />
+        <Route path="/pdf-to-word" component={() => <ToolPage toolType="pdf-to-word" />} />
+        <Route path="/pdf-to-ppt" component={() => <ToolPage toolType="pdf-to-ppt" />} />
+        <Route path="/pdf-to-txt" component={() => <ToolPage toolType="pdf-to-txt" />} />
+        <Route path="/pdf-to-excel" component={() => <ToolPage toolType="pdf-to-excel" />} />
+        <Route path="/png-to-pdf" component={() => <ToolPage toolType="png-to-pdf" />} />
+        <Route path="/word-to-pdf" component={() => <ToolPage toolType="word-to-pdf" />} />
+        <Route path="/lock-pdf" component={() => <ToolPage toolType="lock-pdf" />} />
+        <Route path="/unlock-pdf" component={() => <ToolPage toolType="unlock-pdf" />} />
+        <Route path="/compress-pdf" component={() => <ToolPage toolType="compress-pdf" />} />
+        <Route path="/reorder-pages" component={() => <ToolPage toolType="reorder-pages" />} />
+        <Route path="/edit-metadata" component={() => <ToolPage toolType="edit-metadata" />} />
+        <Route path="/excel-to-pdf" component={() => <ToolPage toolType="excel-to-pdf" />} />
+        <Route path="/privacy" component={Privacy} />
+        <Route path="/about" component={About} />
+        <Route path="/terms" component={Terms} />
+        <Route path="/contact" component={Contact} />
+        <Route path="/login" component={Login} />
+        <Route path="/signup" component={Signup} />
+        <Route path="/logout" component={Logout} />
+        <Route path="/dashboard" component={() => (
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        )} />
+        <Route path="/pdfo_pravaah_aite/login" component={AdminLogin} />
+        <Route path="/pdfo_pravaah_aite" component={() => (
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        )} />
+        <Route path="/pdfo_pravaah_aite/tools" component={() => (
+          <AdminRoute>
+            <ToolsManagement />
+          </AdminRoute>
+        )} />
+        <Route path="/pdfo_pravaah_aite/blogs" component={() => (
+          <AdminRoute>
+            <BlogManagement />
+          </AdminRoute>
+        )} />
+        <Route path="/pdfo_pravaah_aite/feedback" component={() => (
+          <AdminRoute>
+            <FeedbackManagement />
+          </AdminRoute>
+        )} />
+        <Route path="/pdfo_pravaah_aite/seo" component={() => (
+          <AdminRoute>
+            <SEOManagement />
+          </AdminRoute>
+        )} />
+        <Route path="/pdfo_pravaah_aite/tags" component={() => (
+          <AdminRoute>
+            <TagManagement />
+          </AdminRoute>
+        )} />
+        <Route path="/pdfo_pravaah_aite/settings" component={() => (
+          <AdminRoute>
+            <AdminSettings />
+          </AdminRoute>
+        )} />
+        <Route component={NotFound} />
       </Switch>
     </>
   );

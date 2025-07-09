@@ -16,7 +16,7 @@ export function Footer() {
     { name: "Privacy Policy", href: "/privacy" },
     { name: "Terms of Service", href: "/terms" },
     { name: "Contact", href: "/contact" },
-    { name: "Support Us", href: "https://buymeacoffee.com/pravaah" },
+    { name: "Support Us", href: "https://www.buymeacoffee.com/pravaahaitech" },
   ];
 
   return (
