@@ -210,6 +210,12 @@ The application follows a full-stack architecture with clear separation between 
   - **Consistent Branding**: Maintained original PDFo PNG logo design across header and footer
   - **Loading Attributes**: Added loading="eager", decoding="sync", and fetchpriority="high" for optimal performance
   - **Display Optimization**: Added display: block styling to prevent layout shifts during loading
+- July 09, 2025. Fixed footer navigation scroll-to-top functionality:
+  - **Automatic Scroll-to-Top**: Added ScrollToTop component that automatically scrolls to page top on route changes
+  - **Navigation Fix**: Resolved issue where footer links opened new pages but displayed at bottom instead of top
+  - **Smooth UX**: Users now see new pages from the top when clicking footer links
+  - **Route Monitoring**: Component uses useLocation hook to detect route changes and trigger scroll reset
+  - **Zero Impact**: Implementation doesn't affect existing functionality or performance
 
 
 ## User Preferences

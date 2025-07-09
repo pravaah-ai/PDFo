@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
@@ -32,12 +32,25 @@ import SEOManagement from "@/pages/admin/seo-management";
 import TagManagement from "@/pages/admin/tag-management";
 import AdminSettings from "@/pages/admin/admin-settings";
 
+// Component to scroll to top on route change
+function ScrollToTop() {
+  const [location] = useLocation();
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+  
+  return null;
+}
+
 function Router() {
   useAnalytics();
   
   return (
-    <Switch>
-      <Route path="/" component={Home} />
+    <>
+      <ScrollToTop />
+      <Switch>
+        <Route path="/" component={Home} />
       <Route path="/merge-pdf" component={() => <ToolPage toolType="merge-pdf" />} />
       <Route path="/split-pdf" component={() => <ToolPage toolType="split-pdf" />} />
       <Route path="/tool/split-pdf" component={() => <ToolPage toolType="split-pdf" />} />
@@ -111,7 +124,8 @@ function Router() {
         </AdminRoute>
       )} />
       <Route component={NotFound} />
-    </Switch>
+      </Switch>
+    </>
   );
 }
 
